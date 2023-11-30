@@ -1,19 +1,28 @@
 import firebase from "../../firebase/index";
-import { collection, query, where } from "firebase/firestore";
+import { collection, query, where, getDocs, doc } from "firebase/firestore";
 
 // const docRef = doc(db, "cities", "uid");
 
 // const docSnap = await getDoc(docRef);
 
 const Transcription = async () => {
-  const user = auth.currentUser;
+
+  const dataRef = collection(firebase.db, "data");
+
   const q = query(
-    collection(firebase.db, "cities"),
-    where("uid", "==", user.uid),
+    dataRef,
+    where("uid", "==", "123"),
   );
 
   const querySnapshot = await getDocs(q);
+  console.log("--------------------------")
+  console.log(typeof querySnapshot.docs[0].data());
+  // querySnapshot.map((doc) => {
+  //   // doc.data() is never undefined for query doc snapshots
+  //   console.log(doc.id, " => ", doc.data());
+  // });
 
+  // console.log("result:------------------", querySnapshot.data())
   return (
     <section className="bg-gray-80 dark:bg-gray-900 flex items-center">
       <ul className="max-w-md space-y-1 text-gray-500 list-inside dark:text-gray-400">
