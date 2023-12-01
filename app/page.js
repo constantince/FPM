@@ -70,13 +70,18 @@ export default function Home() {
           // call monster api with downloadURL paramters;
           console.log("File available at", downloadURL);
           // front-end process done
-          fetch("/api/hook_for_monsterapi", { auth, downloadUrl });
+          fetch("/api/uploadaudios", { auth, downloadUrl });
         });
       },
     );
   }
 
-  return <a href="/transcription/1">go to sign in</a>;
+  return (
+    <>
+      <Link href={{ pathname: "/transcription/1" }}>must login firt</Link>
+      <a href="/transcription/">without auth</a>
+    </>
+  );
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col">
