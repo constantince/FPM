@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect
+ } from "react";
 import {
   getStorage,
   ref,
@@ -10,6 +11,7 @@ import firebase from "../firebase/index.js";
 import Link from "next/link";
 import Nav from "../comps/nav";
 import Footer from "../comps/footer";
+import { onAuthStateChanged, UserInfo } from 'firebase/auth';
 
 const storage = getStorage();
 const metadata = {
@@ -20,12 +22,24 @@ const auth = firebase.auth;
 
 export default function Home() {
   const [file, setFile] = useState(null);
-  const user = auth.currentUser;
+  const [user, setUser] = useState(null);
   function onChange(e) {
     e.preventDefault();
     const file = e.target.files[0];
     setFile(file);
   }
+
+  useEffect(() => {
+    onAuthStateChanged(firebase.auth, (user) => {
+      console.log("user:::", user);
+        if (user) {
+            setUser(user);
+        } else {
+            setUser(null);
+        }
+    });
+}, [user]);
+
 
   function onSubmit(e) {
     e.preventDefault();
@@ -91,7 +105,7 @@ export default function Home() {
   // );
   return (
     <>
-      <Nav />
+      <Nav user={user} />
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col">
           <form

@@ -2,29 +2,19 @@
 
 import React, {useState, createContext, useEffect, useContext} from "react";
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import auth from '../firebase/auth';
-import { UserInfo } from "firebase/auth";
+import firebase from '../firebase/index';
 
-type AuthContextType = {
-  user: any;
-  isLoding: boolean;
-  error: any;
-}
 
-type EmptyUser = {
-  empty: true
-}
+const AuthContext = createContext({user: {}, isLoding: false, error: null});
 
-const AuthContext = createContext({user: {}, isLoding: false, error: null} as AuthContextType);
-
-const AuthContextProvider = (props: React.PropsWithChildren<{}>) => {
-  const [user, setUser] = useState<UserInfo | null | EmptyUser>(null);
+const AuthContextProvider = (props) => {
+  const [user, setUser] = useState(null);
   const [isLoding, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     // listen for auth state changes
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(firebaae.auth, (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user

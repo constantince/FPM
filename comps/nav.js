@@ -1,3 +1,6 @@
+import firebase from "../firebase/index";
+
+
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
   { name: "Team", href: "#", current: false },
@@ -5,7 +8,11 @@ const navigation = [
   { name: "Calendar", href: "#", current: false },
 ];
 
-export default function Nav() {
+const auth = firebase.auth;
+const user = auth.currentUser;
+
+export default function Nav({user}) {
+  console.log("this is user:::", user);
   return (
     <>
       <nav className="bg-white-200 shadow shadow-gray-300 w-100 px-8 md:px-auto">
@@ -59,7 +66,7 @@ export default function Nav() {
                   clip-rule="evenodd"
                 />
               </svg>
-              <a href="/signin">Login</a>
+              {user ? <p>{user.displayName}</p> : <a href="/signin">Login</a>}
             </button>
           </div>
         </div>
