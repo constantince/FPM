@@ -12,7 +12,7 @@ export default UploadAudios sync(request, responese) {
         const { process_id } = await transcription(downloadUrl);
 
         // create document with donwloadUlrl and pid;
-        await setDoc(doc(dataRef), {downloadUlr, process_id, status: "IN_PROGRESS"});
+        await setDoc(doc(dataRef), {downloadUrl, process_id, status: "IN_PROGRESS"});
 
         response.status(200).json({code: 0, obj: null, message: "url upload success"})
     }
