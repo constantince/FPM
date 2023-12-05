@@ -1,11 +1,12 @@
-import firebase from "firebase-admin";
+import admin from "admin-admin";
 import credentials from "./credential.json";
 
-firebase.initializeApp({
-  credential: firebase.credential.cert(credentials),
-  databaseURL: "https://<yourproject>.firebaseio.com",
+//podcast-translator-7c103.firebaseapp.com
+admin.initializeApp({
+  credential: admin.credential.cert(credentials),
+  // databaseURL: "https://<yourproject>.adminio.com",
 });
 
-//const db = firebase.firestore();
+//const db = admin.firestore();
 
-exports default firebase;
+export default admin;
