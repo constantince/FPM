@@ -1,6 +1,5 @@
 "use client";
-import { useState, useEffect
- } from "react";
+import { useState, useEffect } from "react";
 import {
   getStorage,
   ref,
@@ -11,7 +10,7 @@ import firebase from "../firebase/index.js";
 import Link from "next/link";
 import Nav from "../comps/nav";
 import Footer from "../comps/footer";
-import { onAuthStateChanged, UserInfo } from 'firebase/auth';
+import { onAuthStateChanged, UserInfo } from "firebase/auth";
 
 const storage = getStorage();
 const metadata = {
@@ -19,6 +18,12 @@ const metadata = {
 };
 
 const auth = firebase.auth;
+
+// const storageRef = ref(storage, "audios/first_voice.mp3");
+// console.log(storageRef);
+// getDownloadURL(storageRef).then((downloadURL) => {
+//   console.log("voice:--------", downloadURL);
+// });
 
 export default function Home() {
   const [file, setFile] = useState(null);
@@ -32,14 +37,13 @@ export default function Home() {
   useEffect(() => {
     onAuthStateChanged(firebase.auth, (user) => {
       console.log("user:::", user);
-        if (user) {
-            setUser(user);
-        } else {
-            setUser(null);
-        }
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
     });
-}, [user]);
-
+  }, [user]);
 
   function onSubmit(e) {
     e.preventDefault();

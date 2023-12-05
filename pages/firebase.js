@@ -1,6 +1,5 @@
-const firebase = require("firebase-admin");
-
-const credentials = require("./credentials.json");
+import firebase from "firebase-admin";
+import credentials from "./credential.json";
 
 firebase.initializeApp({
   credential: firebase.credential.cert(credentials),
@@ -9,4 +8,4 @@ firebase.initializeApp({
 
 //const db = firebase.firestore();
 
-module.exports = firebase;
+exports default firebase;
