@@ -1,19 +1,27 @@
-import firebase from "../../firebase/index";
+import admin from '../../pages/firebase';
 import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import AuthProvider from "../../comps/auth_provider";
 
 // const docRef = doc(db, "cities", "uid");
-
+const db = admin.firestore();
 // const docSnap = await getDoc(docRef);
+// const uid = firebase.auth.currentUser;
+const docs = db.collection("data").doc("02c6fdcd-0e09-4658-ace2-1801396a525e");
+
+
+
+// console.log(uid);
+
+console.log("-------",docs.get())
 
 const Transcription = async () => {
-  const uid = firebase.auth.currentUser;
-  // console.log(uid);
-  const dataRef = collection(firebase.db, "data");
+  // const uid = firebase.auth.currentUser;
 
-  const q = query(dataRef, where("uid", "==", uid));
+  // const dataRef = collection(firebase.db, "data");
 
-  const querySnapshot = await getDocs(q);
+  // const q = query(dataRef, where("uid", "==", uid));
+
+  // const querySnapshot = await getDocs(q);
 
   // console.log("----------------------------", querySnapshot.docs);
   // console.log("--------------------------")
@@ -51,7 +59,7 @@ const Transcription = async () => {
           </svg>
           At least one lowercase character
         </li>
-        {querySnapshot.docs.map((item) => (
+        {[].map((item) => (
           <li className="flex items-center" key={item.id}>
             <svg
               className="w-3.5 h-3.5 me-2 text-gray-500 dark:text-gray-400 flex-shrink-0"

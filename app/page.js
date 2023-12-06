@@ -51,6 +51,7 @@ export default function Home() {
       window.location.href = "/signin";
       return;
     }
+    if( !file ) return console.error("no file");
     const storageRef = ref(storage, "audios/" + file.name);
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
@@ -91,11 +92,46 @@ export default function Home() {
       },
       () => {
         // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
           // call monster api with downloadURL paramters;
-          console.log("File available at", downloadURL);
+          console.log("File available at", downloadUrl);
           // front-end process done
-          fetch("/api/uploadaudios", { auth, downloadUrl });
+          // fetch("/api/uploadaudios", { auth, downloadURL }).then((res) => {
+          //   console.log("res:", res);
+          //   // if (res.status === 200) {
+          //   //   window.location.href = "/transcription/" + res.pid;
+          //   // }
+          // });
+
+          const postData = {
+            uid: user.uid,
+            downloadUrl,
+          };
+          
+          // Configuring the fetch request
+          const fetchOptions = {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json' // Assuming JSON data in the request body
+              // Add any other headers as needed
+            },
+            body: JSON.stringify(postData) // Convert JavaScript object to JSON string
+          };
+          
+          // Making the fetch request
+          fetch('/api/uploadaudios', fetchOptions)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.json(); // Assuming the response is in JSON format
+            })
+            .then(data => {
+              console.log('Data received:', data);
+            })
+            .catch(error => {
+              console.error('Error during fetch:', error);
+            });
         });
       },
     );

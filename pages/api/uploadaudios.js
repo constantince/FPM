@@ -18,7 +18,10 @@ async function upload(request, response) {
       downloadUrl,
       "transcriptionHook",
       "https://xffm9f-3000.csb.app/api/get_result",
-    );
+    ).catch(ex => {
+      console.log("error:", ex);
+      return ex;
+    });
     // console.log("result:", result);
     // create document with donwloadUlrl and pid;
     await col.doc(process_id).set(
