@@ -6,13 +6,12 @@ const Content = async ({ params }) => {
   const docSnap = await getDoc(dataRef);
 
   if (docSnap.exists()) {
-    const { content } = docSnap.data();
-    console.log(docSnap.data())
-    return <p>{content}</p>;
+    const { text } = docSnap.data();
+    console.log(docSnap.data());
+    return <p>{text}</p>;
   }
-  
-  return "Not Found..."
-  
+
+  return "Not Found...";
 };
 
 export default Content;

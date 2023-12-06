@@ -1,13 +1,15 @@
-import firebase from "../../firebase/index";
-import { doc, setDoc, collection } from "firebase/firestore";
+import admin from "../firebase";
 import monster from "../monsterapi";
 
 //test:https://firebasestorage.googleapis.com/v0/b/podcast-translator-7c103.appspot.com/o/audios%2Ffirst_voice.mp3?alt=media&token
-// const db = firebase.firestore();
-const dataRef = collection(firebase.db, "data");
+const db = admin.firestore();
+// console.log(firebase.db);
+// const { doc, setDoc, collection } = firebase.db;
+const col = db.collection("data");
+// console.log(dataRef);
 async function upload(request, response) {
   if (request.method === "POST") {
-    const { downloadUrl } = request.body;
+    const { downloadUrl, uid } = request.body;
     // invoke function start to transcripte.
     const {
       data: { process_id },
@@ -19,12 +21,15 @@ async function upload(request, response) {
     );
     // console.log("result:", result);
     // create document with donwloadUlrl and pid;
-    await setDoc(doc(dataRef), {
-      downloadUrl,
-      process_id,
-      uid: "gRDnu6ncJlcldeFeOAme",
-      status: "IN_PROCESS",
-    });
+    await col.doc(process_id).set(
+      {
+        downloadUrl,
+        process_id,
+        uid,
+        status: "IN_PROCESS",
+      },
+      { merge: true },
+    );
 
     response.status(200).json({
       code: 0,
