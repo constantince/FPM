@@ -11,6 +11,7 @@ import Link from "next/link";
 import Nav from "../comps/nav";
 import Footer from "../comps/footer";
 import { onAuthStateChanged, UserInfo } from "firebase/auth";
+import cookie from "js-cookie";
 
 const storage = getStorage();
 const metadata = {
@@ -18,7 +19,6 @@ const metadata = {
 };
 
 const auth = firebase.auth;
-
 // const storageRef = ref(storage, "audios/first_voice.mp3");
 // console.log(storageRef);
 // getDownloadURL(storageRef).then((downloadURL) => {
@@ -28,6 +28,7 @@ const auth = firebase.auth;
 export default function Home() {
   const [file, setFile] = useState(null);
   const [user, setUser] = useState(null);
+
   function onChange(e) {
     e.preventDefault();
     const file = e.target.files[0];
@@ -39,6 +40,16 @@ export default function Home() {
       console.log("user:::", user);
       if (user) {
         setUser(user);
+
+        auth.currentUser
+          .getIdToken(/* forceRefresh */ true)
+          .then(function (idToken) {
+            // Send token to your backend via HTTPS
+            cookie.set("token", idToken);
+          })
+          .catch(function (error) {
+            // Handle error
+          });
       } else {
         setUser(null);
       }
@@ -51,7 +62,7 @@ export default function Home() {
       window.location.href = "/signin";
       return;
     }
-    if( !file ) return console.error("no file");
+    if (!file) return console.error("no file");
     const storageRef = ref(storage, "audios/" + file.name);
     const uploadTask = uploadBytesResumable(storageRef, file, metadata);
 
@@ -107,30 +118,30 @@ export default function Home() {
             uid: user.uid,
             downloadUrl,
           };
-          
+
           // Configuring the fetch request
           const fetchOptions = {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json' // Assuming JSON data in the request body
+              "Content-Type": "application/json", // Assuming JSON data in the request body
               // Add any other headers as needed
             },
-            body: JSON.stringify(postData) // Convert JavaScript object to JSON string
+            body: JSON.stringify(postData), // Convert JavaScript object to JSON string
           };
-          
+
           // Making the fetch request
-          fetch('/api/uploadaudios', fetchOptions)
-            .then(response => {
+          fetch("/api/uploadaudios", fetchOptions)
+            .then((response) => {
               if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error("Network response was not ok");
               }
               return response.json(); // Assuming the response is in JSON format
             })
-            .then(data => {
-              console.log('Data received:', data);
+            .then((data) => {
+              console.log("Data received:", data);
             })
-            .catch(error => {
-              console.error('Error during fetch:', error);
+            .catch((error) => {
+              console.error("Error during fetch:", error);
             });
         });
       },
