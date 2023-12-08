@@ -9,6 +9,7 @@ import {
 import firebase from "../firebase/index.js";
 import Link from "next/link";
 import Nav from "../comps/nav";
+import Warning from "../comps/warning";
 import Footer from "../comps/footer";
 import { onAuthStateChanged, UserInfo } from "firebase/auth";
 import cookie from "js-cookie";
@@ -28,11 +29,23 @@ const auth = firebase.auth;
 export default function Home() {
   const [file, setFile] = useState(null);
   const [user, setUser] = useState(null);
+  const [warn, setWarn] = useState(null);
 
   function onChange(e) {
     e.preventDefault();
     const file = e.target.files[0];
-    setFile(file);
+    console.log(file);
+    if (/^audio\/(mp3|wav|mpeg)$/g.test(file.type)) {
+      // test the file type
+      if (file.size <= 8 * 1024 * 1024) {
+        // test the file size
+        setFile(file);
+      } else {
+        setWarn("too big..");
+      }
+    } else {
+      setWarn("type invaild..");
+    }
   }
 
   useEffect(() => {
@@ -157,6 +170,7 @@ export default function Home() {
   return (
     <>
       <Nav user={user} />
+
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col">
           <form
@@ -189,7 +203,7 @@ export default function Home() {
                     drag and drop
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    SVG, PNG, JPG or GIF (MAX. 800x400px)
+                    WAV, MP3 (MAX. 8M)
                   </p>
                 </div>
                 <input
@@ -204,7 +218,7 @@ export default function Home() {
 
             <button
               type="submit"
-              className="text-gray-900 bg-[#F7BE38] my-20 hover:bg-[#F7BE38]/90 focus:ring-4 focus:outline-none focus:ring-[#F7BE38]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#F7BE38]/50 me-2 mb-2"
+              className="block ml-auto mr-auto my-20 text-gray-900 bg-[#F7BE38] hover:bg-[#F7BE38]/90 focus:ring-4 focus:outline-none focus:ring-[#F7BE38]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center items-center dark:focus:ring-[#F7BE38]/50 me-2 mb-2"
             >
               Submit
             </button>
@@ -215,6 +229,15 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {warn && (
+        <Warning
+          onClose={() => {
+            setWarn(null);
+          }}
+          text={warn}
+        />
+      )}
     </>
   );
 }
