@@ -59,7 +59,7 @@ export default function Nav({ user }) {
                   clipRule="evenodd"
                 />
               </svg>
-              {user ? <p>{user.displayName}</p> : <a href="/signin">Login</a>}
+              {user ? <a href="/transcription">{user.displayName}</a> : <a href="/signin">Login</a>}
             </button>
           </div>
         </div>

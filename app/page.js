@@ -48,8 +48,7 @@ export default function Home() {
     }
   }
 
-  useEffect(() => {
-    onAuthStateChanged(firebase.auth, (user) => {
+  onAuthStateChanged(firebase.auth, (user) => {
       console.log("user:::", user);
       if (user) {
         setUser(user);
@@ -67,6 +66,9 @@ export default function Home() {
         setUser(null);
       }
     });
+
+  useEffect(() => {
+    
   }, [user]);
 
   function onSubmit(e) {

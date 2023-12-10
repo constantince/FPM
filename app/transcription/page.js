@@ -8,16 +8,18 @@ import { cookies } from "next/headers";
 const Transcription = async () => {
   // const docRef = doc(db, "cities", "uid");
   const db = admin.firestore();
-  const idToken = cookies().get("token");
+  const idToken = cookies().get("token").value;
+  // console.log("id token:",idToken)
   if (typeof idToken !== "string") return <>No Auth</>;
-  const uid = await getAuth().verifyIdToken(idToken).catch(console.log);
+  const user = await getAuth().verifyIdToken(idToken).catch(console.log);
+  console.log("uid:------------------", user.uid);
   // const docSnap = await getDoc(docRef);
   // const uid = firebase.auth.currentUser;
-  const docs = await db.collection("data").where("uid", "==", uid).get();
+  const docs = await db.collection("data").where("uid", "==", user.uid).get();
 
   // console.log(uid);
-
-  // console.log("-------", docs.docs[0].id);
+// 
+  // console.log("-------", docs.docs[0].data());
   // docs.forEach((snapshot) => {
   // console.log("snapshot:::+++++>", snapshot.id);
   // });
@@ -64,7 +66,7 @@ const Transcription = async () => {
                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
               </svg>
             )}
-            <Link href={{ pathname: "/transcription/" + item.data().id }}>
+            <Link href={{ pathname: "/transcription/" + item.data().process_id }}>
               {item.data().process_id + "-" + item.data().status}
             </Link>
           </li>
