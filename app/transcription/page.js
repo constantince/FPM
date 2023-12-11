@@ -4,16 +4,19 @@ import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import AuthProvider from "../../comps/auth_provider";
 import Link from "next/link";
 import { cookies } from "next/headers";
+import NoAuth from "../../comps/no_auth";
 
 const Transcription = async () => {
   // const docRef = doc(db, "cities", "uid");
+
   const db = admin.firestore();
   const idToken = cookies().get("token");
-  if (typeof idToken !== "string") return <>No Auth</>;
+  if (typeof idToken !== "string") return <NoAuth />;
   const uid = await getAuth().verifyIdToken(idToken).catch(console.log);
+  const docs = await db.collection("data").where("uid", "==", uid).get();
+
   // const docSnap = await getDoc(docRef);
   // const uid = firebase.auth.currentUser;
-  const docs = await db.collection("data").where("uid", "==", uid).get();
 
   // console.log(uid);
 
@@ -39,38 +42,70 @@ const Transcription = async () => {
 
   // console.log("result:------------------", querySnapshot.data())
   return (
-    <section className="bg-gray-80 dark:bg-gray-900 flex items-center">
-      <ul className="max-w-md space-y-1 text-gray-500 list-inside dark:text-gray-400">
-        {docs.docs.map((item) => (
-          <li className="flex items-center" key={item.id}>
-            {item.data().status === "COMPLETED" ? (
-              <svg
-                className="w-3.5 h-3.5 me-2 text-green-500 dark:text-green-400 flex-shrink-0"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-              </svg>
-            ) : (
-              <svg
-                className="w-3.5 h-3.5 me-2 text-gray-500 dark:text-gray-400 flex-shrink-0"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-              </svg>
-            )}
-            <Link href={{ pathname: "/transcription/" + item.data().id }}>
-              {item.data().process_id + "-" + item.data().status}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <div className="flex flex-col items-center my-20">
+      <div className="w-full md:w-1/2 flex flex-col items-center h-64 ">
+        <div className="w-full px-4">
+          <div className="flex flex-col items-center relative">
+            <div className="w-full">
+              <div className="my-2 p-1 bg-white flex border border-gray-200 rounded">
+                <div className="flex flex-auto flex-wrap" />
+                <input
+                  placeholder="Search by position"
+                  className="p-1 px-2 appearance-none outline-none w-full text-gray-800"
+                />
+                <div className="text-gray-300 w-8 py-1 pl-2 pr-1 border-l flex items-center border-gray-200">
+                  <button className="cursor-pointer w-6 h-6 text-gray-600 outline-none focus:outline-none">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="100%"
+                      height="100%"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="feather feather-chevron-up w-4 h-4"
+                    >
+                      <polyline points="18 15 12 9 6 15" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="absolute shadow bg-white top-100 z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
+              {docs.docs.map((item) => (
+                <Link href="/transcription/1">
+                  <div className="flex flex-col w-full" key={item.data().id}>
+                    <div className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100 transition-all hover:py-5">
+                      <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
+                        <div className="w-6 flex flex-col items-center">
+                          <div className="flex relative w-5 h-5 bg-orange-500 justify-center items-center m-1 mr-2 w-4 h-4 mt-1 rounded-full ">
+                            <img
+                              className="rounded-full"
+                              alt="A"
+                              src="https://randomuser.me/api/portraits/men/62.jpg"
+                            />{" "}
+                          </div>
+                        </div>
+                        <div className="w-full items-center flex">
+                          <div className="mx-2 -mt-1  ">
+                            {item.data().status}
+                            <div className="text-xs truncate w-full normal-case font-normal -mt-1 text-gray-500">
+                              {item.data().created}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -11,6 +10,7 @@ import { useRouter } from "next/navigation";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebaseui/dist/firebaseui.css";
+// import firebaseui from "firebaseui";
 
 let ui = null;
 const uiConfig = {

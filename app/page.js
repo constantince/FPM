@@ -13,6 +13,7 @@ import Warning from "../comps/warning";
 import Footer from "../comps/footer";
 import { onAuthStateChanged, UserInfo } from "firebase/auth";
 import cookie from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const storage = getStorage();
 const metadata = {
@@ -30,7 +31,7 @@ export default function Home() {
   const [file, setFile] = useState(null);
   const [user, setUser] = useState(null);
   const [warn, setWarn] = useState(null);
-
+  const router = useRouter();
   function onChange(e) {
     e.preventDefault();
     const file = e.target.files[0];
@@ -77,7 +78,9 @@ export default function Home() {
     }
     if (!file) return console.error("no file");
     const storageRef = ref(storage, "audios/" + file.name);
-    const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+    const uploadTask = uploadBytesResumable(storageRef, file, {
+      contentType: file.type,
+    });
 
     // Listen for state changes, errors, and completion of the upload.
     uploadTask.on(
@@ -151,7 +154,7 @@ export default function Home() {
               return response.json(); // Assuming the response is in JSON format
             })
             .then((data) => {
-              console.log("Data received:", data);
+              router.push("/success");
             })
             .catch((error) => {
               console.error("Error during fetch:", error);
