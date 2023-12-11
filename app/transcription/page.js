@@ -85,9 +85,9 @@ const Transcription = async () => {
                         </div>
                         <div className="w-full items-center flex">
                           <div className="mx-2 -mt-1  ">
-                            {item.data().status}
+                           {item.data().name}
                             <div className="text-xs truncate w-full normal-case font-normal -mt-1 text-gray-500">
-                              {item.data().created}
+                            {item.data().status}
                             </div>
                           </div>
                         </div>
