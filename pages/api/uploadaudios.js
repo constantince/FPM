@@ -9,7 +9,7 @@ const col = db.collection("data");
 // console.log(dataRef);
 async function upload(request, response) {
   if (request.method === "POST") {
-    const { downloadUrl, uid } = request.body;
+    const { downloadUrl, uid, name } = request.body;
     // invoke function start to transcripte.
     const {
       data: { process_id },
@@ -29,6 +29,7 @@ async function upload(request, response) {
         downloadUrl,
         process_id,
         uid,
+        name,
         status: "IN_PROCESS",
       },
       { merge: true },

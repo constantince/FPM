@@ -135,6 +135,7 @@ export default function Home() {
           const postData = {
             uid: user.uid,
             downloadUrl,
+            name: file.name,
           };
 
           // Configuring the fetch request

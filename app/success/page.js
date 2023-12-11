@@ -28,7 +28,7 @@ const Success = () => {
         <p className="w-[230px] text-center font-normal text-gray-600">
           File uploaded Success
         </p>
-        <a className="mx-auto mt-10 block rounded-xl border-4 border-transparent bg-orange-400 px-6 py-3 text-center text-base font-medium text-orange-100 outline-8 hover:outline hover:duration-300 hover:cursor-pointer">
+        <a href="/transcription" className="mx-auto mt-10 block rounded-xl border-4 border-transparent bg-orange-400 px-6 py-3 text-center text-base font-medium text-orange-100 outline-8 hover:outline hover:duration-300 hover:cursor-pointer">
           Check it out
         </a>
       </div>
