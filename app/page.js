@@ -31,6 +31,8 @@ export default function Home() {
   const [file, setFile] = useState(null);
   const [user, setUser] = useState(null);
   const [warn, setWarn] = useState(null);
+  const [name, setName] = useState(null);
+  const [progress, setProgress] = useState(0);
   const router = useRouter();
   function onChange(e) {
     e.preventDefault();
@@ -41,6 +43,7 @@ export default function Home() {
       if (file.size <= 8 * 1024 * 1024) {
         // test the file size
         setFile(file);
+        setName(file.name);
       } else {
         setWarn("too big..");
       }
@@ -50,27 +53,25 @@ export default function Home() {
   }
 
   onAuthStateChanged(firebase.auth, (user) => {
-      console.log("user:::", user);
-      if (user) {
-        setUser(user);
+    console.log("user:::", user);
+    if (user) {
+      setUser(user);
 
-        auth.currentUser
-          .getIdToken(/* forceRefresh */ true)
-          .then(function (idToken) {
-            // Send token to your backend via HTTPS
-            cookie.set("token", idToken);
-          })
-          .catch(function (error) {
-            // Handle error
-          });
-      } else {
-        setUser(null);
-      }
-    });
+      auth.currentUser
+        .getIdToken(/* forceRefresh */ true)
+        .then(function (idToken) {
+          // Send token to your backend via HTTPS
+          cookie.set("token", idToken);
+        })
+        .catch(function (error) {
+          // Handle error
+        });
+    } else {
+      setUser(null);
+    }
+  });
 
-  useEffect(() => {
-    
-  }, [user]);
+  useEffect(() => {}, [user]);
 
   function onSubmit(e) {
     e.preventDefault();
@@ -89,9 +90,8 @@ export default function Home() {
       "state_changed",
       (snapshot) => {
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
+        const p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(p);
         switch (snapshot.state) {
           case "paused":
             console.log("Upload is paused");
@@ -184,42 +184,62 @@ export default function Home() {
             className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col"
           >
             <div className="flex items-center justify-center w-full">
-              <label
-                htmlFor="dropzone-file"
-                className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-              >
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg
-                    className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 16"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+              {name ? (
+                <div className="flex justify-center flex-col items-center">
+                  <h1 className="pt-2 sm:pt-5 text-blue">
+                    {name} uploading:{" "}
+                    <span className=" text-xs text-yellow-400">
+                      {progress}%
+                    </span>
+                  </h1>
+                  <div className="mt-2 h-4 relative w-60 rounded-full overflow-hidden">
+                    <div className=" w-full h-full bg-gray-200 absolute " />
+                    <div
+                      className=" h-full bg-yellow-400 sm:bg-green-500 absolute"
+                      style={{ width: progress + "%" }}
                     />
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-semibold">Click to upload</span> or
-                    drag and drop
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    WAV, MP3 (MAX. 8M)
-                  </p>
+                  </div>
                 </div>
-                <input
-                  onChange={onChange}
-                  id="dropzone-file"
-                  type="file"
-                  name="target-audio"
-                  className="hidden"
-                />
-              </label>
+              ) : (
+                <>
+                  <label
+                    htmlFor="dropzone-file"
+                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <svg
+                        className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 16"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                        />
+                      </svg>
+                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="font-semibold">Click to upload</span>{" "}
+                        or drag and drop
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        WAV, MP3 (MAX. 8M)
+                      </p>
+                    </div>
+                    <input
+                      onChange={onChange}
+                      id="dropzone-file"
+                      type="file"
+                      name="target-audio"
+                      className="hidden"
+                    />
+                  </label>
+                </>
+              )}
             </div>
 
             <button

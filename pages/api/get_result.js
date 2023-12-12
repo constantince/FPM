@@ -1,12 +1,5 @@
 import admin from "../firebase";
-import {
-  doc,
-  query,
-  collection,
-  getDocs,
-  updateDoc,
-  where,
-} from "firebase/firestore";
+
 const db = admin.firestore();
 const col = db.collection("data");
 
@@ -25,7 +18,7 @@ async function getResult(req, res) {
 
     res.status(200).json({ code: 0 });
   } else {
-    req.status(403).json({ message: "request method not support" });
+    res.status(403).json({ message: "request method not support" });
   }
 }
 

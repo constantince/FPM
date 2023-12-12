@@ -8,10 +8,9 @@ import NoAuth from "../../comps/no_auth";
 
 const Transcription = async () => {
   // const docRef = doc(db, "cities", "uid");
-
-  const db = admin.firestore();
-  const idToken = cookies().get("token").value;
+  const idToken = (cookies().get("token") || {}).value;
   if (typeof idToken !== "string") return <NoAuth />;
+  const db = admin.firestore();
   const user = await getAuth().verifyIdToken(idToken).catch(console.log);
   const docs = await db.collection("data").where("uid", "==", user.uid).get();
 
@@ -21,7 +20,7 @@ const Transcription = async () => {
   // const uid = firebase.auth.currentUser;
 
   // console.log(uid);
-// 
+  //
   // console.log("-------", docs.docs[0].data());
   // docs.forEach((snapshot) => {
   // console.log("snapshot:::+++++>", snapshot.id);
@@ -81,13 +80,12 @@ const Transcription = async () => {
                   <div className="flex flex-col w-full" key={item.id}>
                     <div className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100 transition-all hover:py-5">
                       <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
-                        <div className="w-6 flex flex-col items-center">
-                        </div>
+                        <div className="w-6 flex flex-col items-center"></div>
                         <div className="w-full items-center flex">
                           <div className="mx-2 -mt-1  ">
-                           {item.data().name}
+                            {item.data().name}
                             <div className="text-xs truncate w-full normal-case font-normal -mt-1 text-gray-500">
-                            {item.data().status}
+                              {item.data().status}
                             </div>
                           </div>
                         </div>
