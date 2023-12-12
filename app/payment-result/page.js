@@ -1,3 +1,10 @@
+/*
+Your webhook endpoint redirects your customer to the success_url
+ after you acknowledge that you received the event.
+  If your endpoint is down or the event isn’t acknowledged properly,
+   your handler redirects the customer to the success_url 10 seconds after a successful payment.
+*/
+
 const Success = () => {
   return (
     <div className="bg-gray-100 h-screen">
