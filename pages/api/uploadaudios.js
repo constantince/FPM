@@ -1,7 +1,6 @@
 import admin from "../firebase";
 import monster from "../monsterapi";
 import { getAuth } from "firebase-admin/auth";
-console.log("123");
 const env = process.env;
 //test:https://firebasestorage.googleapis.com/v0/b/podcast-translator-7c103.appspot.com/o/audios%2Ffirst_voice.mp3?alt=media&token
 const db = admin.firestore();

@@ -1,3 +1,9 @@
+import { loadStripe } from "@stripe/stripe-js";
+import PayForm from "../../comps/pay_form";
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+);
+
 const Pricing = () => {
   return (
     <div className="bg-gray-100 min-h-screen py-12 flex items-center justify-center">
@@ -65,11 +71,15 @@ const Pricing = () => {
               </li>
             </ul>
           </div>
-          <div className="p-4">
-            <button className="w-full bg-blue-500 text-white rounded-full px-4 py-2 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800">
-              Select Plan
-            </button>
-          </div>
+          <PayForm action="/api/checkout_session" name="price_id" value="123">
+            <div className="p-4">
+              <input
+                type="submit"
+                value="Select Plan"
+                className="hover:cursor-pointer w-full bg-blue-500 text-white rounded-full px-4 py-2 hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800"
+              />
+            </div>
+          </PayForm>
         </div>
         {/* Pricing Card 2 */}
         <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
