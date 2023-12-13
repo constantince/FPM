@@ -1,18 +1,74 @@
+import stripe_sdk from "stripe";
+import { getAuth } from "firebase-admin/auth";
+import { Timestamp, FieldValue } from "firebase-admin/firestore";
+import admin from "../../firebase";
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
+const db = admin.firestore();
+const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 // Find your endpoint's secret in your Dashboard's webhook settings
 const endpointSecret = "whsec_...";
 
-const fulfillOrder = (lineItems) => {
+// fullfill the Order
+const fulfillOrder = async (session) => {
+  const status = session.payment_status;
+  await updateOrder(session.id, status);
+  await createSubscription(session.subscription, status);
+  await updateUser(session.id, status, session.subscription);
   // TODO: fill me in
-  console.log("Fulfilling order", lineItems);
+  console.log("Order Fulfilled ", session.id);
 };
 
-const createOrder = (session) => {
-  // TODO: fill me in
-  console.log("Creating order", session);
+// ship subscription docs to firebase
+const createSubscription = async (sub_id, status) => {
+  const subscription = await stripe.subscriptions.retrieve(sub_id);
+  const lineItem = subscription.items.data[0];
+  const price = lineItem.price;
+
+  const copy_sub = {
+    id: subscription.id,
+    priceId: price.id,
+    status,
+    currency: lineItem.price.currency || null,
+    interval: price.recurring.interval || null,
+    intervalCount: price.recurring.interval_count || null,
+    createdAt: subscription.created,
+    periodStartsAt: subscription.current_period_start,
+    periodEndsAt: subscription.current_period_end,
+    trialStartsAt: subscription.trial_start || null,
+    trialEndsAt: subscription.trial_end || null,
+  };
+
+  // create subscription
+  const sub_ref = db.collection("Subscriptions").doc(subscription.id);
+  const target_doc = await sub_ref.get();
+  if (target_doc.exists) {
+    // sub_ref.update()
+  } else {
+    await sub_ref.set(copy_sub);
+  }
+};
+
+// update user's permission
+const updateUser = async (pay_id, status, sub_id) => {
+  // check uid
+  const order_ref = db.collection("Orders").doc(pay_id);
+  const doc = await order_ref.get();
+  if (doc.exists) {
+    const uid = doc.data().uid;
+    const user_ref = db.collection("Users").doc(uid);
+    await user_ref.update({
+      vip: 1,
+      subscription: FieldValue.arrayUnion(...[sub_id]),
+    });
+  }
+};
+
+// directed  awaiting payment  paided   failed
+const updateOrder = async (pay_id, status) => {
+  return db.collection("Orders").doc(pay_id).update({
+    status,
+  });
 };
 
 const emailCustomerAboutFailedPayment = (session) => {
@@ -36,25 +92,23 @@ const StripeHook = async (request, response) => {
     case "checkout.session.completed": {
       const session = event.data.object;
       // Save an order in your database, marked as 'awaiting payment'
-      createOrder(session);
 
       // Check if the order is paid (for example, from a card payment)
       //
       // A delayed notification payment will have an `unpaid` status, as
       // you're still waiting for funds to be transferred from the customer's
       // account.
-      if (session.payment_status === "paid") {
-        fulfillOrder(session);
-      }
+
+      await fulfillOrder(session);
 
       break;
     }
-
+    // special payment delay
     case "checkout.session.async_payment_succeeded": {
       const session = event.data.object;
 
       // Fulfill the purchase...
-      fulfillOrder(session);
+      await fulfillOrder(session);
 
       break;
     }
@@ -71,3 +125,5 @@ const StripeHook = async (request, response) => {
 
   response.status(200).end();
 };
+
+export default StripeHook;

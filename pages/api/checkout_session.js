@@ -1,16 +1,17 @@
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+import stripe_sdk from "stripe";
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "../firebase";
 
 const db = admin.firestore();
-const col = db.collection("data");
-// 0 paying 1 success 2 failed
-async function createOrder(uid, pay_id) {
+const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
+const col = db.collection("Orders");
+// awaiting payment  paided   failed
+async function createOrder(uid, pay_id, status) {
   return col.doc(pay_id).set({
     uid,
     pay_id,
-    status: 1,
+    status,
     create_time: FieldValue.serverTimestamp(),
   });
 }
@@ -47,12 +48,12 @@ export default async function handler(req, res) {
             quantity: 1,
           },
         ],
-        mode: "payment",
+        mode: "subscription",
         success_url: `${req.headers.origin}/payment-result?success=true`,
         cancel_url: `${req.headers.origin}/payment-result?canceled=true`,
       });
       // save the session to database
-      const order = createOrder(user.uid, session.id);
+      const order = createOrder(user.uid, session.id, "awaiting payment");
       if (order) {
         res.redirect(303, session.url);
         return;
