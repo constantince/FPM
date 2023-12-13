@@ -65,9 +65,11 @@ export default function Home() {
         })
         .catch(function (error) {
           // Handle error
+          Cookies.remove("token");
         });
     } else {
       setUser(null);
+      Cookies.remove("token");
     }
   });
 

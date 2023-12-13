@@ -10,18 +10,37 @@ import { useRouter } from "next/navigation";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebaseui/dist/firebaseui.css";
+import { doc, setDoc, serverTimestamp  } from "firebase/firestore";
 // import firebaseui from "firebaseui";
 
 let ui = null;
 const uiConfig = {
   callbacks: {
-    signInSuccessWithAuthResult: function (authResult, redirectUrl) {
+    signInSuccessWithAuthResult:  async function (authResult, redirectUrl) {
       // User successfully signed in.
       // Return type determines whether we continue the redirect automatically
       // or whether we leave that to developer to handle.
       // alert("successed!!!")
+
+      // creat a user collection
+      const user = authResult.currentUser;
+
+      const docData = {
+        id: user.uid,
+        displayName : user.displayName,
+        email : user.email,
+        photoURL : user.photoURL,
+        emailVerified : user.emailVerified,
+        subscription: [],
+        vip: 0,
+          createdTime: serverTimestamp()
+ 
+    };
+    await setDoc(doc(db, "Users", user.uid), docData);
+
+    window.location.href = redirectUrl;
       console.log(authResult, redirectUrl);
-      return true;
+      // return true;
     },
     uiShown: function () {
       // The widget is rendered.
@@ -35,7 +54,7 @@ const uiConfig = {
   },
   // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
   signInFlow: "popup",
-  signInSuccessUrl: "http://localhost:3000",
+  signInSuccessUrl: window.location.protocol + "//" + window.location.hostname,
   signInOptions: [
     // Leave the lines as is for the providers you want to offer your users.
     firebase.auth.GoogleAuthProvider.PROVIDER_ID,

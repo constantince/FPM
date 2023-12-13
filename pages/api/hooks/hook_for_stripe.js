@@ -28,6 +28,7 @@ const createSubscription = async (sub_id, status) => {
   const copy_sub = {
     id: subscription.id,
     priceId: price.id,
+    customer: subscription.customer,
     status,
     currency: lineItem.price.currency || null,
     interval: price.recurring.interval || null,
