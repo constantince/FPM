@@ -4,191 +4,227 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  setPersistence,
+  inMemoryPersistence,
+  signInWithPopup,
+  GoogleAuthProvider,
 } from "firebase/auth";
-import app from "../../firebase/index.js";
 import { useRouter } from "next/navigation";
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
+import "../../firebase/index";
+// import firebase from "firebase/compat/app";
+// import "firebase/compat/auth";
 import "firebaseui/dist/firebaseui.css";
-import { doc, setDoc, serverTimestamp  } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+
+const auth = getAuth();
+const provider = new GoogleAuthProvider();
 // import firebaseui from "firebaseui";
+setPersistence(auth, inMemoryPersistence);
+
+function googleAuth() {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      // const credential = GoogleAuthProvider.credentialFromResult(result);
+      // const token = credential.accessToken;
+      // The signed-in user info.
+      const user = result.user;
+      setSessionToken(user, "/profile");
+      // IdP data available using getAdditionalUserInfo(result)
+      // ...
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(error);
+
+      console.log(
+        "google login error: code",
+        errorCode,
+        " message:",
+        errorMessage,
+      );
+      // ...
+    });
+}
+
+const setSessionToken = async (userCredential) => {
+  const user = userCredential;
+  // get idtoken
+  const idToken = await user.getIdToken();
+
+  // fetch a request to set http cookie
+  const fetchOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json", // Assuming JSON data in the request body
+      // Add any other headers as needed
+    },
+    body: JSON.stringify({ idToken, csrfToken: 1000 }), // Convert JavaScript object to JSON string
+  };
+
+  const result = await fetch("/api/sessionLogin", fetchOptions);
+  // creat a user collection
+  const docData = {
+    id: user.uid,
+    displayName: user.displayName,
+    email: user.email,
+    photoURL: user.photoURL,
+    emailVerified: user.emailVerified,
+    subscription: [],
+    vip: 0,
+    createdTime: serverTimestamp(),
+  };
+  await setDoc(doc(db, "Users", user.uid), docData);
+
+  // A page redirect would suffice as the persistence is set to NONE.
+  await auth.signOut();
+
+  window.location.assign(redirectUrl);
+};
+
+const onSubmit = (e) => {
+  e.preventDefault();
+  const email = e.target.email.value;
+  const password = e.target.password.value;
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      setSessionToken(userCredential, "/profile");
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(
+        "google login error: code",
+        errorCode,
+        " message:",
+        errorMessage,
+      );
+      // ..
+    });
+};
 
 let ui = null;
-const uiConfig = {
-  callbacks: {
-    signInSuccessWithAuthResult:  async function (authResult, redirectUrl) {
-      // User successfully signed in.
-      // Return type determines whether we continue the redirect automatically
-      // or whether we leave that to developer to handle.
-      // alert("successed!!!")
-
-      // creat a user collection
-      const user = authResult.currentUser;
-
-      const docData = {
-        id: user.uid,
-        displayName : user.displayName,
-        email : user.email,
-        photoURL : user.photoURL,
-        emailVerified : user.emailVerified,
-        subscription: [],
-        vip: 0,
-          createdTime: serverTimestamp()
- 
-    };
-    await setDoc(doc(db, "Users", user.uid), docData);
-
-    window.location.href = redirectUrl;
-      console.log(authResult, redirectUrl);
-      // return true;
-    },
-    uiShown: function () {
-      // The widget is rendered.
-      // Hide the loader.
-
-      if (typeof window !== "undefined") {
-        const loader = window.document.getElementById("loader");
-        if (loader) loader.style.display = "none";
-      }
-    },
-  },
-  // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
-  signInFlow: "popup",
-  signInSuccessUrl: window.location.protocol + "//" + window.location.hostname,
-  signInOptions: [
-    // Leave the lines as is for the providers you want to offer your users.
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-    //   firebase.auth.GithubAuthProvider.PROVIDER_ID,
-  ],
-  // Terms of service url.
-  tosUrl: "<your-tos-url>",
-  // Privacy policy url.
-  privacyPolicyUrl: "<your-privacy-policy-url>",
-};
 const SingIn = () => {
-  useEffect(() => {
-    if (typeof window !== "undefined" && ui === null) {
-      const firebaseui = require("firebaseui");
-      ui = new firebaseui.auth.AuthUI(app.auth);
-      if (ui !== null) ui.start("#firebaseui-auth-container", uiConfig);
-    }
-  }, []);
-
-  function onSubmit(e) {
-    e.preventDefault();
-    const auth = getAuth();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed up
-        const user = userCredential.user;
-        if (user != null) {
-          // registered
-          window.location.replace("/");
-        } else {
-          // not registerd.
-          alert("Not Found check your account please.");
-        }
-
-        // ...
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ..
-      });
-  }
-
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          className="mx-auto h-10 w-auto"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-          alt="Your Company"
-        />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
+    <div className="max-w-[280px] mx-auto">
+      <div className="flex flex-col items-center mt-[10vh]">
+        <h2 className="mb-5 text-gray-900 font-mono font-bold text-xl">
+          Log In
         </h2>
-      </div>
-
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6" onSubmit={onSubmit}>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Email address
-            </label>
-            <div className="mt-2">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Password
-              </label>
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-semibold text-indigo-600 hover:text-indigo-500"
-                >
-                  Forgot password?
-                </a>
-              </div>
-            </div>
-            <div className="mt-2">
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              />
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Sign in
-            </button>
-          </div>
-        </form>
-
-        <div className="flex items-center mt-5">
-          <div className="h-0.5 w-full bg-slate-400"></div>
-          <div className="mx-5"> Or </div>
-          <div className="h-0.5 w-full bg-slate-400"></div>
-        </div>
-
-        <div id="firebaseui-auth-container"></div>
-
-        <p className="mt-10 text-center text-sm text-gray-500">
-          Not a member?{" "}
-          <a
-            href="/register"
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+        <button
+          onClick={googleAuth}
+          className="flex items-center mb-2 justify-center transition ease-in-out delay-50 px-3 py-2.5 space-x-2 bg-white border border-slate-600 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 focus:ring-opacity-50"
+        >
+          <svg
+            viewBox="0 0 48 48"
+            width={24}
+            height={24}
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+            fill="#000000"
           >
-            Start a new journey
+            <g id="SVGRepo_bgCarrier" strokeWidth={0} />
+            <g
+              id="SVGRepo_tracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <g id="SVGRepo_iconCarrier">
+              {" "}
+              <title>Google-color</title> <desc>Created with Sketch.</desc>{" "}
+              <defs> </defs>{" "}
+              <g
+                id="Icons"
+                stroke="none"
+                strokeWidth={1}
+                fill="none"
+                fillRule="evenodd"
+              >
+                {" "}
+                <g id="Color-" transform="translate(-401.000000, -860.000000)">
+                  {" "}
+                  <g id="Google" transform="translate(401.000000, 860.000000)">
+                    {" "}
+                    <path
+                      d="M9.82727273,24 C9.82727273,22.4757333 10.0804318,21.0144 10.5322727,19.6437333 L2.62345455,13.6042667 C1.08206818,16.7338667 0.213636364,20.2602667 0.213636364,24 C0.213636364,27.7365333 1.081,31.2608 2.62025,34.3882667 L10.5247955,28.3370667 C10.0772273,26.9728 9.82727273,25.5168 9.82727273,24"
+                      id="Fill-1"
+                      fill="#FBBC05"
+                    >
+                      {" "}
+                    </path>{" "}
+                    <path
+                      d="M23.7136364,10.1333333 C27.025,10.1333333 30.0159091,11.3066667 32.3659091,13.2266667 L39.2022727,6.4 C35.0363636,2.77333333 29.6954545,0.533333333 23.7136364,0.533333333 C14.4268636,0.533333333 6.44540909,5.84426667 2.62345455,13.6042667 L10.5322727,19.6437333 C12.3545909,14.112 17.5491591,10.1333333 23.7136364,10.1333333"
+                      id="Fill-2"
+                      fill="#EB4335"
+                    >
+                      {" "}
+                    </path>{" "}
+                    <path
+                      d="M23.7136364,37.8666667 C17.5491591,37.8666667 12.3545909,33.888 10.5322727,28.3562667 L2.62345455,34.3946667 C6.44540909,42.1557333 14.4268636,47.4666667 23.7136364,47.4666667 C29.4455,47.4666667 34.9177955,45.4314667 39.0249545,41.6181333 L31.5177727,35.8144 C29.3995682,37.1488 26.7323182,37.8666667 23.7136364,37.8666667"
+                      id="Fill-3"
+                      fill="#34A853"
+                    >
+                      {" "}
+                    </path>{" "}
+                    <path
+                      d="M46.1454545,24 C46.1454545,22.6133333 45.9318182,21.12 45.6113636,19.7333333 L23.7136364,19.7333333 L23.7136364,28.8 L36.3181818,28.8 C35.6879545,31.8912 33.9724545,34.2677333 31.5177727,35.8144 L39.0249545,41.6181333 C43.3393409,37.6138667 46.1454545,31.6490667 46.1454545,24"
+                      id="Fill-4"
+                      fill="#4285F4"
+                    >
+                      {" "}
+                    </path>{" "}
+                  </g>{" "}
+                </g>{" "}
+              </g>{" "}
+            </g>
+          </svg>
+          <span className="text-gray-700 font-medium">
+            Continue with Google
+          </span>
+        </button>
+        <span className="mb-2 text-gray-900">Or</span>
+        <form onSubmit={onSubmit}>
+          <input
+            type="text"
+            className="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
+            placeholder="Email"
+            name="email"
+            defaultValue
+          />
+          <input
+            type="password"
+            name="password"
+            className="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
+            placeholder="Password"
+            defaultValue
+          />
+          <button className="bg-slate-500 hover:bg-slate-700 text-white text-base rounded-lg py-2.5 px-5 transition-colors w-full text-[19px]">
+            Log In
+          </button>
+        </form>
+        <p className="text-center mt-3 text-[14px]">
+          Don't have an account?
+          <a href="/register" className="text-gray-600">
+            Create one
           </a>
+        </p>
+        <p className="text-center mt-3 text-[14px]">
+          By clicking continue, you agree to our
+          <a href="/terms" className="text-gray-600">
+            Terms of Service
+          </a>{" "}
+          and{" "}
+          <a href="/privacy" className="text-gray-600">
+            Privacy Policy
+          </a>
+          .
         </p>
       </div>
     </div>

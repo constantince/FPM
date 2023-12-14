@@ -56,20 +56,8 @@ export default function Home() {
     console.log("user:::", user);
     if (user) {
       setUser(user);
-
-      auth.currentUser
-        .getIdToken(/* forceRefresh */ true)
-        .then(function (idToken) {
-          // Send token to your backend via HTTPS
-          cookie.set("token", idToken);
-        })
-        .catch(function (error) {
-          // Handle error
-          Cookies.remove("token");
-        });
     } else {
       setUser(null);
-      Cookies.remove("token");
     }
   });
 

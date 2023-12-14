@@ -7,7 +7,7 @@ const db = admin.firestore();
 // console.log(firebase.db);
 // const { doc, setDoc, collection } = firebase.db;
 const col = db.collection("data");
-// console.log(dataRef);
+// console.log(dataRef);;
 async function upload(request, response) {
   if (request.method === "POST") {
     const idToken = request.cookies.token;
