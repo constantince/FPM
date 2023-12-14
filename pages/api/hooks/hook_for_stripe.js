@@ -12,16 +12,15 @@ const endpointSecret = "whsec_...";
 // fullfill the Order
 const fulfillOrder = async (session) => {
   const status = session.payment_status;
-  await updateOrder(session.id, status);
-  await createSubscription(session.subscription, status);
-  await updateUser(session.id, status, session.subscription);
+  // await updateOrder(session.id, status);
+  // await createSubscription(session.subscription, status);
+  // await updateUser(session.id, status, session.subscription);
   // TODO: fill me in
   console.log("Order Fulfilled ", session.id);
 };
 
 // ship subscription docs to firebase
-const createSubscription = async (sub_id, status) => {
-  const subscription = await stripe.subscriptions.retrieve(sub_id);
+const refreshSubscription = async (subscription) => {
   const lineItem = subscription.items.data[0];
   const price = lineItem.price;
 
@@ -29,7 +28,7 @@ const createSubscription = async (sub_id, status) => {
     id: subscription.id,
     priceId: price.id,
     customer: subscription.customer,
-    status,
+    status: subscription.status,
     currency: lineItem.price.currency || null,
     interval: price.recurring.interval || null,
     intervalCount: price.recurring.interval_count || null,
@@ -44,31 +43,56 @@ const createSubscription = async (sub_id, status) => {
   const sub_ref = db.collection("Subscriptions").doc(subscription.id);
   const target_doc = await sub_ref.get();
   if (target_doc.exists) {
-    // sub_ref.update()
+    await sub_ref.update(copy_sub, { merge: true });
   } else {
     await sub_ref.set(copy_sub);
   }
 };
 
-// update user's permission
-const updateUser = async (pay_id, status, sub_id) => {
+// integred stripte info to user
+const updateUser = async (session) => {
   // check uid
-  const order_ref = db.collection("Orders").doc(pay_id);
+  const { id, subscription, customer, customer_email } = session;
+  const order_ref = db.collection("Orders").doc(id);
   const doc = await order_ref.get();
   if (doc.exists) {
     const uid = doc.data().uid;
     const user_ref = db.collection("Users").doc(uid);
-    await user_ref.update({
-      vip: 1,
-      subscription: FieldValue.arrayUnion(...[sub_id]),
-    });
+    await user_ref.update(
+      {
+        subscription,
+        customer,
+        customer_email,
+      },
+      { merge: true },
+    );
   }
 };
 
+// update user permission
+const updatePermission = async (subscription) => {
+  const { id, customer, status } = subscription;
+  const userRef = db
+    .collection("User")
+    .where("customer", "==", customer)
+    .where("scription", "==", id);
+
+  await userRef.update(
+    {
+      status,
+    },
+    { merge: true },
+  );
+};
+
 // directed  awaiting payment  paided   failed
-const updateOrder = async (pay_id, status) => {
-  return db.collection("Orders").doc(pay_id).update({
+const updateOrder = async (session) => {
+  const { id, status, customer, mode } = session;
+  return db.collection("Orders").doc(session.id).update({
+    id,
     status,
+    mode,
+    customer,
   });
 };
 
@@ -99,8 +123,9 @@ const StripeHook = async (request, response) => {
       // A delayed notification payment will have an `unpaid` status, as
       // you're still waiting for funds to be transferred from the customer's
       // account.
-
-      await fulfillOrder(session);
+      await updateOrder(session);
+      await updateUser(session);
+      // await fulfillOrder(session);
 
       break;
     }
@@ -114,13 +139,48 @@ const StripeHook = async (request, response) => {
       break;
     }
 
+    // failed
     case "checkout.session.async_payment_failed": {
       const session = event.data.object;
 
       // Send an email to the customer asking them to retry their order
-      emailCustomerAboutFailedPayment(session);
+      await updateOrder(session);
 
       break;
+    }
+
+    // subscription created
+
+    case "customer.subscription.created": {
+      const subscription = event.data.object;
+      refreshSubscription(subscription);
+      updatePermission(subscription);
+    }
+
+    // renew or update
+    case "customer.subscription.updated": {
+      const subscription = event.data.object;
+
+      // Send an email to the customer asking them to retry their order
+      refreshSubscription(subscription);
+      updatePermission(subscription);
+
+      break;
+    }
+
+    // canceled
+    case "subscription_schedule.canceled": {
+      const session = event.data.object;
+
+      // Send an email to the customer asking them to retry their order
+      refreshSubscription(subscription);
+      updatePermission(subscription);
+
+      break;
+    }
+
+    // end
+    case "customer.subscription.deleted": {
     }
   }
 

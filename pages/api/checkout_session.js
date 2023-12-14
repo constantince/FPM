@@ -7,10 +7,10 @@ const db = admin.firestore();
 const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 const col = db.collection("Orders");
 // awaiting payment  paided   failed
-async function createOrder(uid, pay_id, status) {
+async function createOrder(uid, session_id, status) {
   return col.doc(pay_id).set({
     uid,
-    pay_id,
+    session_id,
     status,
     create_time: FieldValue.serverTimestamp(),
   });
@@ -53,7 +53,7 @@ export default async function handler(req, res) {
         cancel_url: `${req.headers.origin}/payment-result?canceled=true`,
       });
       // save the session to database
-      const order = createOrder(user.uid, session.id, "awaiting payment");
+      const order = await createOrder(user.uid, session.id, "awaiting payment");
       if (order) {
         res.redirect(303, session.url);
         return;
