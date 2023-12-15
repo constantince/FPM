@@ -44,7 +44,7 @@ const refreshSubscription = async (subscription) => {
   const target_doc = await sub_ref.get();
   if (target_doc.exists) {
     await sub_ref.update(copy_sub, { merge: true });
-  } else {
+  } else  {
     await sub_ref.set(copy_sub);
   }
 };
