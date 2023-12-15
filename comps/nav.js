@@ -1,5 +1,6 @@
-import firebase from "../firebase/index";
-
+import admin from "../pages/firebase";
+import { getAuth } from "firebase-admin/auth";
+import { cookies } from "next/headers";
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
   { name: "Team", href: "#", current: false },
@@ -7,11 +8,23 @@ const navigation = [
   { name: "Calendar", href: "#", current: false },
 ];
 
-const auth = firebase.auth;
-const user = auth.currentUser;
+console.log("what are your type...");
 
-export default function Nav({ user }) {
-  console.log("this is user:::", user);
+export default async function Nav() {
+  const sessionCookie = (cookies().get("session") || {}).value;
+  let user = null;
+  if (sessionCookie) {
+    console.log("thhis is session cookie in nav", sessionCookie);
+    const token = await getAuth()
+      .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+      .catch(console.error);
+    const db = admin.firestore();
+    // search user collection
+    const user_docs = await db.collection("Users").doc(token.sub).get();
+
+    user = user_docs.data();
+  }
+
   return (
     <>
       <nav className="bg-white-200 shadow shadow-gray-300 w-100 px-8 md:px-auto">

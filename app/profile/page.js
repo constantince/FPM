@@ -3,15 +3,15 @@ import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "../firebase";
 import BillingBtn from "../../comps/pay_form";
 import { cookies } from "next/headers";
-import NoAuth from "./no_auth";
 
 const Profile = async () => {
-  const idToken = (cookies().get("token") || {}).value;
-  if (typeof idToken !== "string") return <NoAuth />;
+  const sessionCookie = (cookies().get("session") || {}).value;
+  const user = await getAuth()
+    .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+    .catch(console.error);
   const db = admin.firestore();
-  const user = await getAuth().verifyIdToken(idToken).catch(console.log);
   // search user collection
-  const user_docs = await db.collection("Users").doc(user.uid).get();
+  const user_docs = await db.collection("Users").doc(user.sub).get();
 
   const { displayName, email, photoURL, vip, subscription } = user_docs.data();
 
@@ -19,7 +19,7 @@ const Profile = async () => {
 
   let customer = null;
 
-  if (vip === 1) {
+  if (vip) {
     // subscribed user
     // search subscription_docs
     const subscription_docs = await db
@@ -54,7 +54,7 @@ const Profile = async () => {
               <span></span>
             </p>
             <div className="my-5 px-6">
-              {customer && (
+              {vip && customer && (
                 <BillingBtn
                   action="/api/manage_billing_portal"
                   method="post"
