@@ -8,19 +8,13 @@ import {
 } from "firebase/storage";
 import firebase from "../firebase/index.js";
 import Link from "next/link";
-import Nav from "../comps/nav";
 import Warning from "../comps/warning";
 import Footer from "../comps/footer";
-import { onAuthStateChanged, UserInfo } from "firebase/auth";
+import { getAuth, onAuthStateChanged, UserInfo } from "firebase/auth";
 import cookie from "js-cookie";
 import { useRouter } from "next/navigation";
-
 const storage = getStorage();
-const metadata = {
-  contentType: "audio/mp3",
-};
-
-const auth = firebase.auth;
+const auth = getAuth();
 // const storageRef = ref(storage, "audios/first_voice.mp3");
 // console.log(storageRef);
 // getDownloadURL(storageRef).then((downloadURL) => {
@@ -52,7 +46,7 @@ export default function Home() {
     }
   }
 
-  onAuthStateChanged(firebase.auth, (user) => {
+  onAuthStateChanged(getAuth(), (user) => {
     console.log("user:::", user);
     if (user) {
       setUser(user);
@@ -165,8 +159,6 @@ export default function Home() {
   // );
   return (
     <>
-      <Nav user={user} />
-
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col">
           <form
@@ -177,7 +169,7 @@ export default function Home() {
               {name ? (
                 <div className="flex justify-center flex-col items-center">
                   <h1 className="pt-2 sm:pt-5 text-blue">
-                    {name} uploading:{" "}
+                    {name} uploaded:
                     <span className=" text-xs text-yellow-400">
                       {progress}%
                     </span>

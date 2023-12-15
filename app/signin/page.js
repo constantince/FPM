@@ -19,7 +19,7 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 const auth = getAuth();
 const provider = new GoogleAuthProvider();
 // import firebaseui from "firebaseui";
-setPersistence(auth, inMemoryPersistence);
+// setPersistence(auth, inMemoryPersistence);
 
 function googleAuth() {
   signInWithPopup(auth, provider)
@@ -57,6 +57,7 @@ const setSessionToken = async (userCredential) => {
   // get idtoken
   const idToken = await user.getIdToken();
 
+  const userInfo = await getDoc(doc(db, "Users", user.uid));
   // fetch a request to set http cookie
   const fetchOptions = {
     method: "POST",
@@ -64,25 +65,17 @@ const setSessionToken = async (userCredential) => {
       "Content-Type": "application/json", // Assuming JSON data in the request body
       // Add any other headers as needed
     },
-    body: JSON.stringify({ idToken, csrfToken: 1000 }), // Convert JavaScript object to JSON string
+    body: JSON.stringify({
+      idToken,
+      csrfToken: 1000,
+      vip: userInfo.data().vip,
+    }), // Convert JavaScript object to JSON string
   };
 
-  const result = await fetch("/api/sessionLogin", fetchOptions);
-  // creat a user collection
-  const docData = {
-    id: user.uid,
-    displayName: user.displayName,
-    email: user.email,
-    photoURL: user.photoURL,
-    emailVerified: user.emailVerified,
-    subscription: [],
-    vip: 0,
-    createdTime: serverTimestamp(),
-  };
-  await setDoc(doc(db, "Users", user.uid), docData);
+  const result = await fetch("/api/session_login", fetchOptions);
 
   // A page redirect would suffice as the persistence is set to NONE.
-  await auth.signOut();
+  // await auth.signOut();
 
   window.location.assign(redirectUrl);
 };
@@ -93,7 +86,7 @@ const onSubmit = (e) => {
   const password = e.target.password.value;
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      setSessionToken(userCredential, "/profile");
+      setSessionToken(userCredential.user, "/profile");
       // ...
     })
     .catch((error) => {
@@ -196,35 +189,22 @@ const SingIn = () => {
             className="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
             placeholder="Email"
             name="email"
-            defaultValue
           />
           <input
             type="password"
             name="password"
             className="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
             placeholder="Password"
-            defaultValue
           />
           <button className="bg-slate-500 hover:bg-slate-700 text-white text-base rounded-lg py-2.5 px-5 transition-colors w-full text-[19px]">
             Log In
           </button>
         </form>
         <p className="text-center mt-3 text-[14px]">
-          Don't have an account?
-          <a href="/register" className="text-gray-600">
+          Don't have an account? &nbsp;
+          <a href="/signup" className="text-gray-600">
             Create one
           </a>
-        </p>
-        <p className="text-center mt-3 text-[14px]">
-          By clicking continue, you agree to our
-          <a href="/terms" className="text-gray-600">
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a href="/privacy" className="text-gray-600">
-            Privacy Policy
-          </a>
-          .
         </p>
       </div>
     </div>

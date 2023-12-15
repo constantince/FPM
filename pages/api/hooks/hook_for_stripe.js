@@ -181,6 +181,8 @@ const StripeHook = async (request, response) => {
 
     // end
     case "customer.subscription.deleted": {
+      refreshSubscription(subscription);
+      updatePermission(subscription);
     }
   }
 

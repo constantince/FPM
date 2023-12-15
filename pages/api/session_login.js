@@ -3,6 +3,7 @@ import { getAuth } from "firebase-admin/auth";
 export default async function SessionLogin(req, res) {
   const idToken = req.body.idToken.toString();
   const csrfToken = Number(req.body.csrfToken.toString());
+  const vip = req.body.vip.toString();
   // Guard against CSRF attacks.
   if (csrfToken * 3.15 !== 3150) {
     res.status(401).send("UNAUTHORIZED REQUEST!");
@@ -21,6 +22,7 @@ export default async function SessionLogin(req, res) {
         // Set cookie policy for session cookie.
         const options = { maxAge: expiresIn, httpOnly: true, secure: true };
         res.cookie("session", sessionCookie, options);
+        res.cookie("vip", vip, options);
         res.status(401).json({ code: 0, status: "success" });
       },
       (error) => {

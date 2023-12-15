@@ -4,15 +4,15 @@ import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import AuthProvider from "../../comps/auth_provider";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import NoAuth from "../../comps/no_auth";
 
 const Transcription = async () => {
   // const docRef = doc(db, "cities", "uid");
-  const idToken = (cookies().get("token") || {}).value;
-  if (typeof idToken !== "string") return <NoAuth />;
+  const sessionCookie = (cookies().get("session") || {}).value;
+  const user = await getAuth()
+    .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+    .catch(console.error);
   const db = admin.firestore();
-  const user = await getAuth().verifyIdToken(idToken).catch(console.log);
-  const docs = await db.collection("data").where("uid", "==", user.uid).get();
+  const docs = await db.collection("data").where("uid", "==", user.sub).get();
 
   // console.log(uid);
 

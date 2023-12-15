@@ -1,16 +1,16 @@
 import admin from "../../../pages/firebase";
 import { cookies } from "next/headers";
 import { getAuth } from "firebase-admin/auth";
-import NoAuth from "../../comps/no_auth";
+import { cookies } from "next/headers";
 const Content = async ({ params }) => {
-  const idToken = (cookies().get("token") || {}).value;
-  if (typeof idToken !== "string") return <NoAuth />;
-  const user = await getAuth().verifyIdToken(idToken).catch(console.log);
-  if (typeof user !== "string") return <Noauth />;
+  const sessionCookie = (cookies().get("session") || {}).value;
+  const user = await getAuth()
+    .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+    .catch(console.error);
   const db = admin.firestore();
   const docSnap = await db
     .collection("data")
-    .where("uid", "==", user.uid)
+    .where("uid", "==", user.sub)
     .where("process_id", "==", params.slug)
     .get();
 
