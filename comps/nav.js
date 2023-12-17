@@ -1,6 +1,8 @@
 import admin from "../pages/firebase";
 import { getAuth } from "firebase-admin/auth";
 import { cookies } from "next/headers";
+import { useContext } from "react";
+import getUserAuth from "../utils/server_user_auth";
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
   { name: "Team", href: "#", current: false },
@@ -12,18 +14,27 @@ console.log("what are your type...");
 
 export default async function Nav() {
   const sessionCookie = (cookies().get("session") || {}).value;
-  let user = null;
-  if (sessionCookie) {
-    console.log("thhis is session cookie in nav", sessionCookie);
-    const token = await getAuth()
-      .verifySessionCookie(sessionCookie, true /** checkRevoked */)
-      .catch(console.error);
-    const db = admin.firestore();
-    // search user collection
-    const user_docs = await db.collection("Users").doc(token.sub).get();
+  const user = await getUserAuth(sessionCookie, "/signin");
+  // let user = null;
+  // if (sessionCookie) {
+  //   console.log("thhis is session cookie in nav", sessionCookie);
+  //   const token = await getAuth()
+  //     .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+  //     .catch((ex) => null);
+  //   console.log("this is token", token);
+  //   if (token) {
+  //     // console.log("error in nav", sessionCookie, token);
+  //     const db = admin.firestore();
+  //     // search user collection
+  //     const user_docs = await db.collection("Users").doc(token.sub).get();
 
-    user = user_docs.data();
-  }
+  //     user = user_docs.data();
+  //   }
+  // }
+
+  // const { data, isLoading, error } = useGetUser("test.");
+
+  console.log("thi is use::::", user);
 
   return (
     <>
@@ -58,7 +69,7 @@ export default async function Nav() {
                 />
               </svg>
               {user ? (
-                <a href="/transcription">{user.displayName}</a>
+                <a href="/api/session_logout">Logout</a>
               ) : (
                 <a href="/signin">Login</a>
               )}

@@ -1,20 +1,18 @@
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
-import admin from "../firebase";
+import admin from "../../pages/firebase";
 import BillingBtn from "../../comps/pay_form";
 import { cookies } from "next/headers";
-
+import getUserAuth from "../../utils/server_user_auth";
+import { redirect } from "next/navigation";
 const Profile = async () => {
   const sessionCookie = (cookies().get("session") || {}).value;
-  const user = await getAuth()
-    .verifySessionCookie(sessionCookie, true /** checkRevoked */)
-    .catch(console.error);
-  const db = admin.firestore();
-  // search user collection
-  const user_docs = await db.collection("Users").doc(user.sub).get();
-
-  const { displayName, email, photoURL, vip, subscription } = user_docs.data();
-
+  const user = await getUserAuth(sessionCookie);
+  if (!user) {
+    redirect("/expired"); // expired session
+  }
+  const { displayName, email, photoURL, vip, subscription } = user;
+  console.log("result profile:", user);
   const sub_id = subscription[0];
 
   let customer = null;
@@ -54,7 +52,7 @@ const Profile = async () => {
               <span></span>
             </p>
             <div className="my-5 px-6">
-              {vip && customer && (
+              {vip && customer ? (
                 <BillingBtn
                   action="/api/manage_billing_portal"
                   method="post"
@@ -67,11 +65,11 @@ const Profile = async () => {
                     value="Manage bill and subscription"
                   />
                 </BillingBtn>
-              )}
+              ) : null}
             </div>
             <div className="flex justify-between items-center my-5 px-6">
               <a
-                href
+                href="/transcription"
                 className="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-150 ease-in font-medium text-sm text-center w-full py-3"
               >
                 My Tasks

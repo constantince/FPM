@@ -1,5 +1,4 @@
 import admin from "../../../pages/firebase";
-import { cookies } from "next/headers";
 import { getAuth } from "firebase-admin/auth";
 import { cookies } from "next/headers";
 const Content = async ({ params }) => {

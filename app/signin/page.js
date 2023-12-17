@@ -14,9 +14,16 @@ import "../../firebase/index";
 // import firebase from "firebase/compat/app";
 // import "firebase/compat/auth";
 import "firebaseui/dist/firebaseui.css";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
 const auth = getAuth();
+const db = getFirestore();
 const provider = new GoogleAuthProvider();
 // import firebaseui from "firebaseui";
 // setPersistence(auth, inMemoryPersistence);
@@ -46,18 +53,30 @@ function googleAuth() {
         "google login error: code",
         errorCode,
         " message:",
-        errorMessage,
+        errorMessage
       );
       // ...
     });
 }
 
-const setSessionToken = async (userCredential) => {
+const setSessionToken = async (userCredential, redirectUrl) => {
   const user = userCredential;
   // get idtoken
   const idToken = await user.getIdToken();
 
   const userInfo = await getDoc(doc(db, "Users", user.uid));
+  if (!userInfo.exists()) {
+    const data = userInfo.data();
+    await setDoc(doc(db, "Users", user.uid), {
+      id: data.uid,
+      displayName: data.displayName,
+      email: data.email,
+      photoURL: data.photoURL,
+      subscription: [],
+      vip: 0,
+      createdTime: serverTimestamp(),
+    });
+  }
   // fetch a request to set http cookie
   const fetchOptions = {
     method: "POST",
@@ -77,7 +96,7 @@ const setSessionToken = async (userCredential) => {
   // A page redirect would suffice as the persistence is set to NONE.
   // await auth.signOut();
 
-  window.location.assign(redirectUrl);
+  window.location.replace(redirectUrl);
 };
 
 const onSubmit = (e) => {
@@ -96,7 +115,7 @@ const onSubmit = (e) => {
         "google login error: code",
         errorCode,
         " message:",
-        errorMessage,
+        errorMessage
       );
       // ..
     });
