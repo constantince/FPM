@@ -5,11 +5,14 @@ import BillingBtn from "../../comps/pay_form";
 import { cookies } from "next/headers";
 import getUserAuth from "../../utils/server_user_auth";
 import { redirect } from "next/navigation";
-const Profile = async () => {
+const Profile = async ({}) => {
   const sessionCookie = (cookies().get("session") || {}).value;
   const user = await getUserAuth(sessionCookie);
+
+  console.log("user session verify...", user);
   if (!user) {
-    redirect("/expired"); // expired session
+    redirect("/expired");
+    return;
   }
   const { displayName, email, photoURL, vip, subscription } = user;
   console.log("result profile:", user);

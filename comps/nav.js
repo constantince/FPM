@@ -1,8 +1,7 @@
-import admin from "../pages/firebase";
-import { getAuth } from "firebase-admin/auth";
-import { cookies } from "next/headers";
+"use client";
 import { useContext } from "react";
-import getUserAuth from "../utils/server_user_auth";
+import { UserContext } from "../utils/user-provider";
+
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
   { name: "Team", href: "#", current: false },
@@ -13,8 +12,6 @@ const navigation = [
 console.log("what are your type...");
 
 export default async function Nav() {
-  const sessionCookie = (cookies().get("session") || {}).value;
-  const user = await getUserAuth(sessionCookie, "/signin");
   // let user = null;
   // if (sessionCookie) {
   //   console.log("thhis is session cookie in nav", sessionCookie);
@@ -33,8 +30,8 @@ export default async function Nav() {
   // }
 
   // const { data, isLoading, error } = useGetUser("test.");
-
-  console.log("thi is use::::", user);
+  const user = useContext(UserContext);
+  console.log("user in nav", user);
 
   return (
     <>

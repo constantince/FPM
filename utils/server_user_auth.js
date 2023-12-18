@@ -7,7 +7,6 @@ export default async (sessionCookie) => {
     const token = await getAuth()
       .verifySessionCookie(sessionCookie, true /** checkRevoked */)
       .catch((ex) => null);
-    console.log("this is token", token);
     if (token) {
       // console.log("error in nav", sessionCookie, token);
       const db = admin.firestore();

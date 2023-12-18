@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   getStorage,
   ref,
@@ -9,12 +9,14 @@ import {
 import firebase from "../firebase/index.js";
 import Link from "next/link";
 import Warning from "../comps/warning";
-import Footer from "../comps/footer";
+// import Nav from "../comps/nav";
 import { getAuth, onAuthStateChanged, UserInfo } from "firebase/auth";
 import cookie from "js-cookie";
 import { useRouter } from "next/navigation";
+import { UserContext } from "../utils/user-provider";
+import Nav from "../comps/nav";
+
 const storage = getStorage();
-const auth = getAuth();
 // const storageRef = ref(storage, "audios/first_voice.mp3");
 // console.log(storageRef);
 // getDownloadURL(storageRef).then((downloadURL) => {
@@ -22,8 +24,9 @@ const auth = getAuth();
 // });
 
 export default function Home() {
+  const userInfo = useContext(UserContext);
   const [file, setFile] = useState(null);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(userInfo);
   const [warn, setWarn] = useState(null);
   const [name, setName] = useState(null);
   const [progress, setProgress] = useState(0);
@@ -46,16 +49,14 @@ export default function Home() {
     }
   }
 
-  onAuthStateChanged(getAuth(), (user) => {
-    console.log("user:::", user);
-    if (user) {
-      setUser(user);
-    } else {
-      setUser(null);
-    }
-  });
-
-  useEffect(() => {}, [user]);
+  // onAuthStateChanged(getAuth(), (user) => {
+  //   console.log("user:::", user);
+  //   if (user) {
+  //     setUser(user);
+  //   } else {
+  //     setUser(null);
+  //   }
+  // });
 
   function onSubmit(e) {
     e.preventDefault();
@@ -159,6 +160,7 @@ export default function Home() {
   // );
   return (
     <>
+      <Nav />
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col">
           <form
@@ -235,8 +237,6 @@ export default function Home() {
 
         <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]"></div>
       </main>
-
-      <Footer />
 
       {warn && (
         <Warning

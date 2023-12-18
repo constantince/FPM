@@ -31,13 +31,13 @@ import { NextResponse } from "next/server";
 //   }
 // };
 export function middleware(request) {
-  console.log("request", request.nextUrl.pathname);
+  // console.log("request", request.nextUrl.pathname);
   // const allCookies = request.cookies.getAll(); // also  include cookie with http only property.
   // console.log("all cookies::", allCookies);
   const vip = request.cookies.has("vip");
   const logged = request.cookies.has("session");
-  console.log("vip", vip);
-  console.log("logged", logged);
+  // console.log("vip", vip);
+  // console.log("logged", logged);
   const nextPage = NextResponse.next();
   // // vip customer do not need to view this page
   if (request.nextUrl.pathname.startsWith("/pricing")) {
@@ -45,7 +45,7 @@ export function middleware(request) {
       if (!vip) {
         return nextPage;
       } else {
-        return NextResponse.rewrite(new URL("/profile", request.url));
+        return NextResponse.redirect(new URL("/profile", request.url));
       }
     }
   }
@@ -53,13 +53,13 @@ export function middleware(request) {
   //no auth user can not view these router
   if (/^\/(profile|transcription)/g.test(request.nextUrl.pathname)) {
     if (logged) return nextPage;
-    return NextResponse.rewrite(new URL("/signin", request.url));
+    return NextResponse.redirect(new URL("/signin", request.url));
   }
 
   // logged user cannot view signin or signup page
   if (/^\/(signin|signup)$/g.test(request.nextUrl.pathname)) {
     if (!logged) return nextPage;
-    return NextResponse.rewrite(new URL("/profile", request.url));
+    return NextResponse.redirect(new URL("/profile", request.url));
   }
 
   return nextPage;

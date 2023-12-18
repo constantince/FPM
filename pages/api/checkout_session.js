@@ -18,23 +18,6 @@ async function createOrder(uid, session_id, status) {
 
 export default async function handler(req, res) {
   // confirm the uid
-  const idToken = req.cookies.token;
-  if (typeof idToken !== "string") {
-    // no loged user;
-    return res.status(403).json({
-      code: 1,
-      message: "Insufficient auth",
-    });
-  }
-
-  const user = await getAuth().verifyIdToken(idToken).catch(console.log);
-  if (!user) {
-    // no auth user
-    return res.status(401).json({
-      code: 1,
-      message: "Not a verified user",
-    });
-  }
   if (req.method === "POST") {
     try {
       const { price_id } = req.body;
