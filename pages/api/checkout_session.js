@@ -8,7 +8,7 @@ const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 const col = db.collection("Orders");
 // awaiting payment  paided   failed
 async function createOrder(uid, session_id, status) {
-  return col.doc(pay_id).set({
+  return col.doc(session_id).set({
     uid,
     session_id,
     status,
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
   // confirm the uid
   if (req.method === "POST") {
     try {
-      const { price_id } = req.body;
+      const { price_id, uid } = req.body;
       // Create Checkout Sessions from body params.
       // https://stripe.com/docs/api/checkout/sessions/object   session description
       const session = await stripe.checkout.sessions.create({
@@ -35,14 +35,20 @@ export default async function handler(req, res) {
         success_url: `${req.headers.origin}/payment-result?success=true`,
         cancel_url: `${req.headers.origin}/payment-result?canceled=true`,
       });
+
+      console.log("sesssion successed...");
+
       // save the session to database
-      const order = await createOrder(user.uid, session.id, "awaiting payment");
+
+      const order = await createOrder(uid, session.id, "awaiting payment");
+
       if (order) {
         res.redirect(303, session.url);
         return;
       }
       res.status(200).json({ code: 1, message: "something went wrong", order });
     } catch (err) {
+      console.log(err);
       res.status(err.statusCode || 500).json(err.message);
     }
   } else {

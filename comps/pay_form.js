@@ -1,7 +1,15 @@
-const PayForm = ({ action, method = "post", children, name, value }) => {
+const PayForm = ({ action, method = "post", children, inputs }) => {
   return (
     <form action={action} target="_self" method={method}>
-      <input name={name} readOnly value={value} className="hidden" />
+      {inputs.map((item) => (
+        <input
+          key={item.value}
+          name={item.name}
+          readOnly
+          value={item.value}
+          className="hidden"
+        />
+      ))}
       {children}
     </form>
   );

@@ -40,15 +40,15 @@ export function middleware(request) {
   // console.log("logged", logged);
   const nextPage = NextResponse.next();
   // // vip customer do not need to view this page
-  if (request.nextUrl.pathname.startsWith("/pricing")) {
-    if (logged) {
-      if (!vip) {
-        return nextPage;
-      } else {
-        return NextResponse.redirect(new URL("/profile", request.url));
-      }
-    }
-  }
+  // if (request.nextUrl.pathname.startsWith("/pricing")) {
+  //   if (logged) {
+  //     if (!vip) {
+  //       return nextPage;
+  //     } else {
+  //       return NextResponse.redirect(new URL("/profile", request.url));
+  //     }
+  //   }
+  // }
 
   //no auth user can not view these router
   if (/^\/(profile|transcription)/g.test(request.nextUrl.pathname)) {

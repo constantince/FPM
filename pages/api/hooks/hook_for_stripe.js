@@ -7,7 +7,7 @@ import admin from "../../firebase";
 const db = admin.firestore();
 const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 // Find your endpoint's secret in your Dashboard's webhook settings
-const endpointSecret = "whsec_...";
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 // fullfill the Order
 const fulfillOrder = async (session) => {
@@ -44,7 +44,7 @@ const refreshSubscription = async (subscription) => {
   const target_doc = await sub_ref.get();
   if (target_doc.exists) {
     await sub_ref.update(copy_sub, { merge: true });
-  } else  {
+  } else {
     await sub_ref.set(copy_sub);
   }
 };
@@ -102,6 +102,7 @@ const emailCustomerAboutFailedPayment = (session) => {
 };
 
 const StripeHook = async (request, response) => {
+  console.log("event from stripe are coming****************************");
   const payload = request.body;
   const sig = request.headers["stripe-signature"];
 
@@ -115,6 +116,7 @@ const StripeHook = async (request, response) => {
 
   switch (event.type) {
     case "checkout.session.completed": {
+      console.log("checkout.session.completed");
       const session = event.data.object;
       // Save an order in your database, marked as 'awaiting payment'
 
@@ -131,6 +133,7 @@ const StripeHook = async (request, response) => {
     }
     // special payment delay
     case "checkout.session.async_payment_succeeded": {
+      console.log("checkout.session.async_payment_succeeded");
       const session = event.data.object;
 
       // Fulfill the purchase...
@@ -141,6 +144,7 @@ const StripeHook = async (request, response) => {
 
     // failed
     case "checkout.session.async_payment_failed": {
+      console.log("checkout.session.async_payment_failed");
       const session = event.data.object;
 
       // Send an email to the customer asking them to retry their order
@@ -152,6 +156,7 @@ const StripeHook = async (request, response) => {
     // subscription created
 
     case "customer.subscription.created": {
+      console.log("customer.subscription.created");
       const subscription = event.data.object;
       refreshSubscription(subscription);
       updatePermission(subscription);
@@ -159,6 +164,7 @@ const StripeHook = async (request, response) => {
 
     // renew or update
     case "customer.subscription.updated": {
+      console.log("customer.subscription.updated");
       const subscription = event.data.object;
 
       // Send an email to the customer asking them to retry their order
@@ -170,6 +176,7 @@ const StripeHook = async (request, response) => {
 
     // canceled
     case "subscription_schedule.canceled": {
+      console.log("subscription_schedule.canceled");
       const session = event.data.object;
 
       // Send an email to the customer asking them to retry their order
@@ -181,6 +188,7 @@ const StripeHook = async (request, response) => {
 
     // end
     case "customer.subscription.deleted": {
+      console.log("customer.subscription.deleted");
       refreshSubscription(subscription);
       updatePermission(subscription);
     }

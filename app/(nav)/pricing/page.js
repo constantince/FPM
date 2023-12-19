@@ -10,6 +10,7 @@ const stripePromise = loadStripe(
 
 const Pricing = async ({}) => {
  let status = null;
+ let inputs = [];
  const sessionCookie = (cookies().get("session") || {}).value;
 
  if(!sessionCookie) {
@@ -17,13 +18,21 @@ const Pricing = async ({}) => {
  } else {
   const user = await getUserAuth(sessionCookie);
 
-
+  
   if (!user) {
     status = "/expired"; // unauth
   } else {
-    const { displayName, email, photoURL, vip, subscription } = user;
+    const { displayName, email, photoURL, vip, subscription, id } = user;
     console.log("result profile:", user);
     const sub_id = subscription[0];
+
+    inputs = [{
+      name: "price_id",
+      value: "price_1OOtKeEGxooraCtKtzHHQsaj"
+     },{
+      name:"uid",
+      value: user.id
+     }]
   
     let customer = null;
   
@@ -34,6 +43,8 @@ const Pricing = async ({}) => {
   }
  
  }
+
+
 
  
 
@@ -104,7 +115,7 @@ const Pricing = async ({}) => {
             </li>
           </ul>
         </div>
-        { status === null ? <PayForm action="/api/checkout_session" name="price_id" value="123">
+        { status === null ? <PayForm action="/api/checkout_session" inputs={inputs}>
           <div className="p-4">
             <input
               type="submit"

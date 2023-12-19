@@ -36,11 +36,11 @@ export default async function RootLayout({ children }) {
   const user = await getUserAuth(sessionCookie || "empty");
 
   console.log("user session verify...", user);
-
+  const v = user ? { user: user.id, id: user.displayName } : null;
   return (
     <html lang="en">
       <body className={inter.className}>
-        <UserProvider value={user}>
+        <UserProvider value={v}>
           {children}
           <Footer />
         </UserProvider>
