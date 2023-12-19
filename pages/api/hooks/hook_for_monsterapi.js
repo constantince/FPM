@@ -1,5 +1,5 @@
 import { doc, setDoc } from "firebase/firestore";
-import { transcription, registerHook } from "../../monsterapi";
+import { transcription, registerHook } from "/utils/monsterapi";
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const { userId, process_id } = req.body;

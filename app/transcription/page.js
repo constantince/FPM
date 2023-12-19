@@ -1,4 +1,4 @@
-import admin from "../../pages/firebase";
+import admin from "../..//firebase/admin";
 import { getAuth } from "firebase-admin/auth";
 import { collection, query, where, getDocs, doc } from "firebase/firestore";
 import AuthProvider from "../../comps/auth_provider";

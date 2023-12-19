@@ -1,7 +1,7 @@
 import stripe_sdk from "stripe";
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
-import admin from "../../firebase";
+import admin from "/firebase/admin";
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const db = admin.firestore();

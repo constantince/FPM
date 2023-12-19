@@ -1,5 +1,5 @@
-import admin from "../firebase";
-import monster from "../monsterapi";
+import admin from "/firebase/admin";
+import monster from "/utils/monsterapi";
 import { getAuth } from "firebase-admin/auth";
 const env = process.env;
 //test:https://firebasestorage.googleapis.com/v0/b/podcast-translator-7c103.appspot.com/o/audios%2Ffirst_voice.mp3?alt=media&token

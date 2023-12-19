@@ -1,4 +1,4 @@
-import admin from "../firebase";
+import admin from "/firebase/admin";
 
 const db = admin.firestore();
 const col = db.collection("data");

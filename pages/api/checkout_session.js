@@ -1,7 +1,7 @@
 import stripe_sdk from "stripe";
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
-import admin from "../firebase";
+import admin from "/firebase/admin";
 
 const db = admin.firestore();
 const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);

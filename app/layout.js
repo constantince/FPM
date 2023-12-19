@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import admin from "../pages/firebase";
+import admin from "/firebase/admin";
 import { getAuth } from "firebase-admin/auth";
 import { cookies } from "next/headers";
 import UserProvider, { UserContext } from "../utils/user-provider";

@@ -1,6 +1,6 @@
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
-import admin from "../../pages/firebase";
+import admin from "/firebase/admin";
 import BillingBtn from "../../comps/pay_form";
 import { cookies } from "next/headers";
 import getUserAuth from "../../utils/server_user_auth";
