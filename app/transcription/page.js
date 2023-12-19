@@ -76,8 +76,8 @@ const Transcription = async () => {
             </div>
             <div className="absolute shadow bg-white top-100 z-40 w-full lef-0 rounded max-h-select overflow-y-auto svelte-5uyqqj">
               {docs.docs.map((item) => (
-                <Link href={`/transcription/${item.id}`}>
-                  <div className="flex flex-col w-full" key={item.id}>
+                <Link href={`/transcription/${item.id}`} key={item.id}>
+                  <div className="flex flex-col w-full">
                     <div className="cursor-pointer w-full border-gray-100 rounded-t border-b hover:bg-teal-100 transition-all hover:py-5">
                       <div className="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative hover:border-teal-100">
                         <div className="w-6 flex flex-col items-center"></div>

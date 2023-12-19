@@ -53,7 +53,7 @@ function googleAuth() {
         "google login error: code",
         errorCode,
         " message:",
-        errorMessage
+        errorMessage,
       );
       // ...
     });
@@ -115,7 +115,7 @@ const onSubmit = (e) => {
         "google login error: code",
         errorCode,
         " message:",
-        errorMessage
+        errorMessage,
       );
       // ..
     });
@@ -220,7 +220,7 @@ const SingIn = () => {
           </button>
         </form>
         <p className="text-center mt-3 text-[14px]">
-          Don't have an account? &nbsp;
+          Do not have an account? &nbsp;
           <a href="/signup" className="text-gray-600">
             Create one
           </a>
