@@ -2,7 +2,6 @@ import stripe_sdk from "stripe";
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
-import { headers } from "next/headers";
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const db = admin.firestore();
@@ -104,7 +103,7 @@ const emailCustomerAboutFailedPayment = (session) => {
 
 const StripeHook = async (request, response) => {
   console.log("event from stripe are coming****************************");
-  const payload = request.body;
+  const payload = await buffer(request);
   const sig = request.headers["stripe-signature"];
   console.log(sig);
   let event;
@@ -200,6 +199,28 @@ const StripeHook = async (request, response) => {
   }
 
   response.status(200).end();
+};
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+const buffer = (req) => {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+
+    req.on("data", (chunk) => {
+      chunks.push(chunk);
+    });
+
+    req.on("end", () => {
+      resolve(Buffer.concat(chunks));
+    });
+
+    req.on("error", reject);
+  });
 };
 
 export default StripeHook;
