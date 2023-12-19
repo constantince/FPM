@@ -2,6 +2,7 @@ import stripe_sdk from "stripe";
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
+import { headers } from "next/headers";
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const db = admin.firestore();
@@ -105,11 +106,15 @@ const StripeHook = async (request, response) => {
   console.log("event from stripe are coming****************************");
   const payload = request.body;
   const sig = request.headers["stripe-signature"];
-
+  console.log(sig);
   let event;
-
+  console.log(JSON.stringify(payload));
   try {
-    event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
+    event = stripe.webhooks.constructEvent(
+      JSON.stringify(payload),
+      sig,
+      endpointSecret,
+    );
   } catch (err) {
     return response.status(400).send(`Webhook Error: ${err.message}`);
   }
