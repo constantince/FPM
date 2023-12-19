@@ -107,13 +107,8 @@ const StripeHook = async (request, response) => {
   const sig = request.headers["stripe-signature"];
   console.log(sig);
   let event;
-  console.log(JSON.stringify(payload));
   try {
-    event = stripe.webhooks.constructEvent(
-      JSON.stringify(payload),
-      sig,
-      endpointSecret,
-    );
+    event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
   } catch (err) {
     return response.status(400).send(`Webhook Error: ${err.message}`);
   }
