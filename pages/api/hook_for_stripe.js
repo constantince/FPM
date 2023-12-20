@@ -105,7 +105,8 @@ const StripeHook = async (request, response) => {
   console.log("event from stripe are coming****************************");
   const payload = await buffer(request);
   const sig = request.headers["stripe-signature"];
-  console.log(sig);
+  console.log("payload:"， payload);
+  console.log("sig:",sig);
   let event;
   try {
     event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
