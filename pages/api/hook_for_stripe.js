@@ -9,7 +9,7 @@ const db = admin.firestore();
 const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 // Find your endpoint's secret in your Dashboard's webhook settings
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-console.log(process.env.STRIPE_SECRET_KEY, endpointSecret);
+console.log("secretKey":, process.env.STRIPE_SECRET_KEY, "endpointSecret:",endpointSecret);
 // fullfill the Order
 const fulfillOrder = async (session) => {
   const status = session.payment_status;
