@@ -2,6 +2,7 @@ import stripe_sdk from "stripe";
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
+import getRwaBody from "raw-body";
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const db = admin.firestore();
@@ -103,13 +104,13 @@ const emailCustomerAboutFailedPayment = (session) => {
 
 const StripeHook = async (request, response) => {
   console.log("event from stripe are coming****************************");
-  const payload = await buffer(request);
+  const rawBody = await getRwaBody(request);
   const sig = request.headers["stripe-signature"];
-  console.log("payload:", payload);
+  console.log("rawBody:", rawBody);
   console.log("sig:", sig);
   let event;
   try {
-    event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
+    event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
   } catch (err) {
     return response.status(400).send(`Webhook Error: ${err.message}`);
   }
@@ -203,20 +204,12 @@ export const config = {
   },
 };
 
-const buffer = (req) => {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-
-    req.on("data", (chunk) => {
-      chunks.push(chunk);
-    });
-
-    req.on("end", () => {
-      resolve(Buffer.concat(chunks));
-    });
-
-    req.on("error", reject);
-  });
-};
+// async function getRawBody(readable) {
+//   const chunks = [];
+//   for await (const chunk of readable) {
+//     chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+//   }
+//   return Buffer.concat(chunks);
+// }
 
 export default StripeHook;
