@@ -36,7 +36,7 @@ export default async function handler(req, res) {
         cancel_url: `${req.headers.origin}/payment-result?canceled=true`,
       });
 
-      console.log("sesssion successed...");
+      console.log("sesssion successed...", session.id);
 
       // save the session to database
 

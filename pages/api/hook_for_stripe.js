@@ -133,7 +133,6 @@ const StripeHook = async (request, response) => {
 
   switch (event.type) {
     case "checkout.session.completed": {
-      console.log("checkout.session.completed");
       const session = event.data.object;
       // Save an order in your database, marked as 'awaiting payment'
 
@@ -142,6 +141,7 @@ const StripeHook = async (request, response) => {
       // A delayed notification payment will have an `unpaid` status, as
       // you're still waiting for funds to be transferred from the customer's
       // account.
+      console.log("checkout.session.completed", session.id);
       await updateOrder(session);
       await updateUser(session);
       // await fulfillOrder(session);
