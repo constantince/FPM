@@ -2,19 +2,18 @@ import stripe_sdk from "stripe";
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
-import getRawBody from "raw-body";
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const db = admin.firestore();
 const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 // Find your endpoint's secret in your Dashboard's webhook settings
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-console.log(
-  "secretKey:",
-  process.env.STRIPE_SECRET_KEY,
-  "endpointSecret:",
-  endpointSecret,
-);
+// console.log(
+//   "secretKey:",
+//   process.env.STRIPE_SECRET_KEY,
+//   "endpointSecret:",
+//   endpointSecret,
+// );
 // fullfill the Order
 const fulfillOrder = async (session) => {
   const status = session.payment_status;
@@ -35,7 +34,7 @@ const refreshSubscription = async (subscription) => {
     priceId: price.id,
     customer: subscription.customer,
     status: subscription.status,
-    currency: lineItem.price.currency || null,
+    currency: subscription.currency || null,
     interval: price.recurring.interval || null,
     intervalCount: price.recurring.interval_count || null,
     createdAt: subscription.created,
@@ -47,45 +46,45 @@ const refreshSubscription = async (subscription) => {
 
   // create subscription
   const sub_ref = db.collection("Subscriptions").doc(subscription.id);
+  // console.log(sub_ref);
   const target_doc = await sub_ref.get();
   if (target_doc.exists) {
     await sub_ref.update(copy_sub, { merge: true });
   } else {
     await sub_ref.set(copy_sub);
   }
+
+  return subscription.customer;
 };
 
 // integred stripte info to user
-const updateUser = async (session) => {
+const updateUser = async (session, uid) => {
   // check uid
-  const { id, subscription, customer, customer_email } = session;
-  const order_ref = db.collection("Orders").doc(id);
-  const doc = await order_ref.get();
-  if (doc.exists) {
-    const uid = doc.data().uid;
-    const user_ref = db.collection("Users").doc(uid);
-    await user_ref.update(
-      {
-        subscription,
-        customer,
-        customer_email,
-      },
-      { merge: true },
-    );
-  }
+  const { id, subscription, customer, customer_email, status } = session;
+
+  const user_doc_ref = db.collection("Users").doc(uid);
+  await user_doc_ref.update(
+    {
+      subscription,
+      customer_email,
+      customer,
+    },
+    { merge: true },
+  );
 };
 
 // update user permission
 const updatePermission = async (subscription) => {
   const { id, customer, status } = subscription;
-  const userRef = db
-    .collection("User")
+  const userRef = await db
+    .collection("Users")
     .where("customer", "==", customer)
-    .where("scription", "==", id);
-
-  await userRef.update(
+    .where("subscription", "==", id)
+    .get();
+  console.log(userRef.docs[0]);
+  await db.collection("Users").doc(userRef.docs[0].id).update(
     {
-      status,
+      vip: status,
     },
     { merge: true },
   );
@@ -93,13 +92,15 @@ const updatePermission = async (subscription) => {
 
 // directed  awaiting payment  paided   failed
 const updateOrder = async (session) => {
-  const { id, status, customer, mode } = session;
-  return db.collection("Orders").doc(session.id).update({
+  const { id, status, mode, uid } = session;
+  const doc = db.collection("Orders").doc(session.id);
+  const snapshot = await doc.get();
+  await doc.update({
     id,
     status,
     mode,
-    customer,
   });
+  return snapshot.data().uid;
 };
 
 const emailCustomerAboutFailedPayment = (session) => {
@@ -124,17 +125,17 @@ const buffer = (req) => {
 };
 
 const StripeHook = async (request, response) => {
-  console.log("event from stripe are coming****************************");
-  const rawBody = await buffer(request);
-  const sig = request.headers["stripe-signature"];
-  console.log("rawBody:", rawBody);
-  console.log("sig:", sig);
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
-  } catch (err) {
-    return response.status(400).send(`Webhook Error: ${err.message}`);
-  }
+  // console.log("event from stripe are coming****************************");
+  // const rawBody = await buffer(request);
+  // const sig = request.headers["stripe-signature"];
+  // console.log("rawBody:", rawBody);
+  // console.log("sig:", sig);
+  let event = request.body;
+  // try {
+  //   event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
+  // } catch (err) {
+  //   return response.status(400).send(`Webhook Error: ${err.message}`);
+  // }
 
   switch (event.type) {
     case "checkout.session.completed": {
@@ -147,8 +148,8 @@ const StripeHook = async (request, response) => {
       // you're still waiting for funds to be transferred from the customer's
       // account.
       console.log("checkout.session.completed", session.id);
-      await updateOrder(session);
-      await updateUser(session);
+      const uid = await updateOrder(session);
+      await updateUser(session, uid);
       // await fulfillOrder(session);
 
       break;
@@ -180,8 +181,9 @@ const StripeHook = async (request, response) => {
     case "customer.subscription.created": {
       console.log("customer.subscription.created");
       const subscription = event.data.object;
-      refreshSubscription(subscription);
-      updatePermission(subscription);
+      await refreshSubscription(subscription);
+      await updatePermission(subscription);
+      break;
     }
 
     // renew or update
@@ -213,6 +215,7 @@ const StripeHook = async (request, response) => {
       console.log("customer.subscription.deleted");
       refreshSubscription(subscription);
       updatePermission(subscription);
+      break;
     }
   }
 
@@ -221,16 +224,8 @@ const StripeHook = async (request, response) => {
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: true,
   },
 };
-
-// async function getRawBody(readable) {
-//   const chunks = [];
-//   for await (const chunk of readable) {
-//     chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
-//   }
-//   return Buffer.concat(chunks);
-// }
 
 export default StripeHook;

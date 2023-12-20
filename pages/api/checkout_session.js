@@ -15,6 +15,11 @@ async function createOrder(uid, session_id, status) {
     create_time: FieldValue.serverTimestamp(),
   });
 }
+// async function assignCustomerToUser(uid, customer) {
+//   return db.collection("Users").doc(uid).update({
+//     customer,
+//   });
+// }
 
 export default async function handler(req, res) {
   // confirm the uid
@@ -36,11 +41,11 @@ export default async function handler(req, res) {
         cancel_url: `${req.headers.origin}/payment-result?canceled=true`,
       });
 
-      console.log("sesssion successed...", session.id);
+      console.log("sesssion successed...", session);
 
       // save the session to database
-
-      const order = await createOrder(uid, session.id, "awaiting payment");
+      // await assignCustomerToUser(uid, session.customer);
+      const order = await createOrder(uid, session.id, session.status);
 
       if (order) {
         res.redirect(303, session.url);

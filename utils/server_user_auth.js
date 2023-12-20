@@ -14,7 +14,6 @@ export default async (sessionCookie) => {
       const user_docs = await db.collection("Users").doc(token.sub).get();
 
       user = user_docs.data();
-
       return user;
     }
   }

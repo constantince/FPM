@@ -36,7 +36,7 @@ export default async function RootLayout({ children }) {
   const user = await getUserAuth(sessionCookie || "empty");
 
   console.log("user session verify...", user);
-  const v = user ? { user: user.id, id: user.displayName } : null;
+  const v = user ? { uid: user.uid, email: user.email } : null;
   return (
     <html lang="en">
       <body className={inter.className}>

@@ -39,7 +39,7 @@ const setSessionToken = async (userCredential, redirectUrl) => {
   // creat a user collection
   const userInfo = user.providerData[0];
   const docData = {
-    id: userInfo.uid,
+    id: user.uid,
     displayName: userInfo.displayName,
     email: userInfo.email,
     photoURL: userInfo.photoURL,
@@ -88,7 +88,7 @@ const onSubmit = (e) => {
         "google login error: code",
         errorCode,
         " message:",
-        errorMessage
+        errorMessage,
       );
       // ..
     });
