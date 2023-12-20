@@ -2,14 +2,14 @@ import stripe_sdk from "stripe";
 import { getAuth } from "firebase-admin/auth";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
-import getRwaBody from "raw-body";
+import getRawBody from "raw-body";
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
 const db = admin.firestore();
 const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 // Find your endpoint's secret in your Dashboard's webhook settings
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
+console.log(process.env.STRIPE_SECRET_KEY, endpointSecret);
 // fullfill the Order
 const fulfillOrder = async (session) => {
   const status = session.payment_status;
@@ -102,9 +102,25 @@ const emailCustomerAboutFailedPayment = (session) => {
   console.log("Emailing customer", session);
 };
 
+const buffer = (req) => {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+
+    req.on("data", (chunk) => {
+      chunks.push(chunk);
+    });
+
+    req.on("end", () => {
+      resolve(Buffer.concat(chunks));
+    });
+
+    req.on("error", reject);
+  });
+};
+
 const StripeHook = async (request, response) => {
   console.log("event from stripe are coming****************************");
-  const rawBody = await getRwaBody(request);
+  const rawBody = await buffer(request);
   const sig = request.headers["stripe-signature"];
   console.log("rawBody:", rawBody);
   console.log("sig:", sig);
