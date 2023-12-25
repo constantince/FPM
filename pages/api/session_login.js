@@ -3,7 +3,7 @@ import cookie from "cookie";
 export default async function SessionLogin(req, res) {
   const idToken = req.body.idToken.toString();
   const csrfToken = Number(req.body.csrfToken.toString());
-  const vip = req.body.vip.toString();
+  // const vip = req.body.vip.toString();
   // Guard against CSRF attacks.
   if (csrfToken * 3.15 !== 3150 || req.method !== "POST") {
     res.status(401).send("UNAUTHORIZED REQUEST!");
@@ -16,7 +16,7 @@ export default async function SessionLogin(req, res) {
   // To only allow session cookie setting on recent sign-in, auth_time in ID token
   // can be checked to ensure user was recently signed in before creating a session cookie.
   const sessionCookie = await getAuth().createSessionCookie(idToken, {
-    expiresIn,
+    expiresIn: expiresIn * 1000,
   });
 
   if (sessionCookie) {
@@ -33,15 +33,11 @@ export default async function SessionLogin(req, res) {
         value: sessionCookie,
         options,
       },
-      vip: {
-        value: vip,
-        options,
-      },
     };
     const cookieHeaders = Object.entries(cookies).map(
       ([name, { value, options }]) => {
         return cookie.serialize(name, value, options);
-      }
+      },
     );
 
     // res.setHeader(

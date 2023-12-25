@@ -13,6 +13,6 @@ export default async function SessionLogin(req, res) {
   res.setHeader("Set-Cookie", clearCookieHeaders);
   // res.setHeader("Set-Cookie", cookie.serialize("vip", 0, options));
   const decodedClaims = await getAuth().verifySessionCookie(sessionCookie);
-  getAuth().revokeRefreshTokens(decodedClaims.sub);
+  // getAuth().revokeRefreshTokens(decodedClaims.sub);
   res.redirect(307, "/signin");
 }

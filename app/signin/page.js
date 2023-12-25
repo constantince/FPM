@@ -66,13 +66,12 @@ const setSessionToken = async (userCredential, redirectUrl) => {
 
   const userInfo = await getDoc(doc(db, "Users", user.uid));
   if (!userInfo.exists()) {
-    const data = userInfo.data();
     await setDoc(doc(db, "Users", user.uid), {
-      id: data.uid,
-      displayName: data.displayName,
-      email: data.email,
-      photoURL: data.photoURL,
-      subscription: [],
+      id: user.uid,
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL,
+      subscription: null,
       vip: 0,
       createdTime: serverTimestamp(),
     });
@@ -87,7 +86,6 @@ const setSessionToken = async (userCredential, redirectUrl) => {
     body: JSON.stringify({
       idToken,
       csrfToken: 1000,
-      vip: userInfo.data().vip,
     }), // Convert JavaScript object to JSON string
   };
 

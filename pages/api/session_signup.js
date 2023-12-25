@@ -17,7 +17,7 @@ export default async function SessionSignUp(req, res) {
   // To only allow session cookie setting on recent sign-in, auth_time in ID token
   // can be checked to ensure user was recently signed in before creating a session cookie.
   const sessionCookie = await getAuth().createSessionCookie(idToken, {
-    expiresIn,
+    expiresIn: expiresIn * 1000,
   });
 
   if (sessionCookie) {
@@ -42,7 +42,7 @@ export default async function SessionSignUp(req, res) {
     const cookieHeaders = Object.entries(cookies).map(
       ([name, { value, options }]) => {
         return cookie.serialize(name, value, options);
-      }
+      },
     );
 
     // res.setHeader(

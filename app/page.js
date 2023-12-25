@@ -11,10 +11,10 @@ import Link from "next/link";
 import Warning from "../comps/warning";
 // import Nav from "../comps/nav";
 import { getAuth, onAuthStateChanged, UserInfo } from "firebase/auth";
-import cookie from "js-cookie";
 import { useRouter } from "next/navigation";
 import { UserContext } from "../utils/user-provider";
 import Nav from "../comps/nav";
+import Modal from "../comps/modal";
 
 const storage = getStorage();
 // const storageRef = ref(storage, "audios/first_voice.mp3");
@@ -33,20 +33,20 @@ export default function Home() {
   const router = useRouter();
   function onChange(e) {
     e.preventDefault();
-    const file = e.target.files[0];
-    console.log(file);
-    if (/^audio\/(mp3|wav|mpeg)$/g.test(file.type)) {
-      // test the file type
-      if (file.size <= 8 * 1024 * 1024) {
-        // test the file size
-        setFile(file);
-        setName(file.name);
-      } else {
-        setWarn("too big..");
-      }
-    } else {
-      setWarn("type invaild..");
-    }
+    // const file = e.target.files[0];
+    // console.log(file);
+    // if (/^audio\/(mp3|wav|mpeg)$/g.test(file.type)) {
+    //   // test the file type
+    //   if (file.size <= 8 * 1024 * 1024) {
+    //     // test the file size
+    //     setFile(file);
+    //     setName(file.name);
+    //   } else {
+    //     setWarn("too big..");
+    //   }
+    // } else {
+    //   setWarn("type invaild..");
+    // }
   }
 
   // onAuthStateChanged(getAuth(), (user) => {
@@ -64,7 +64,15 @@ export default function Home() {
       window.location.href = "/signin";
       return;
     }
-    if (!file) return console.error("no file");
+
+    // if (!file) return setWarn("please choose a file first");
+    const { subInfo } = user;
+
+    if (subInfo.status !== "active")
+      return setWarn("You are not a memeber, please subscribed first.");
+
+    return setWarn("congraguation!!");
+
     const storageRef = ref(storage, "audios/" + file.name);
     const uploadTask = uploadBytesResumable(storageRef, file, {
       contentType: file.type,
@@ -237,15 +245,12 @@ export default function Home() {
 
         <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]"></div>
       </main>
-
-      {warn && (
-        <Warning
-          onClose={() => {
-            setWarn(null);
-          }}
-          text={warn}
-        />
-      )}
+      <Modal
+        context={warn}
+        show={!!warn}
+        title="opps~~"
+        ok={() => setWarn(null)}
+      />
     </>
   );
 }

@@ -11,7 +11,7 @@ const navigation = [
 
 console.log("what are your type...");
 
-export default async function Nav() {
+export default function Nav() {
   // let user = null;
   // if (sessionCookie) {
   //   console.log("thhis is session cookie in nav", sessionCookie);

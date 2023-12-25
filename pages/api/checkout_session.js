@@ -51,7 +51,7 @@ export default async function handler(req, res) {
         res.redirect(303, session.url);
         return;
       }
-      res.status(200).json({ code: 1, message: "something went wrong", order });
+      res.status(500).json({ code: 1, message: "something went wrong", order });
     } catch (err) {
       console.log(err);
       res.status(err.statusCode || 500).json(err.message);

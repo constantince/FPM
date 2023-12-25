@@ -10,7 +10,7 @@ export default async function ToPortal(req, res) {
 
     const session = await stripe.billingPortal.sessions.create({
       customer,
-      return_url: "/",
+      return_url: `${req.headers.origin}/profile`,
     });
 
     res.redirect(303, session.url);

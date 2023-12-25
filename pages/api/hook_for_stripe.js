@@ -25,7 +25,7 @@ const fulfillOrder = async (session) => {
 };
 
 // ship subscription docs to firebase
-const refreshSubscription = async (subscription) => {
+const refreshSubscription = async (uid, subscription) => {
   const lineItem = subscription.items.data[0];
   const price = lineItem.price;
 
@@ -45,14 +45,8 @@ const refreshSubscription = async (subscription) => {
   };
 
   // create subscription
-  const sub_ref = db.collection("Subscriptions").doc(subscription.id);
-  // console.log(sub_ref);
-  const target_doc = await sub_ref.get();
-  if (target_doc.exists) {
-    await sub_ref.update(copy_sub, { merge: true });
-  } else {
-    await sub_ref.set(copy_sub);
-  }
+  const sub_ref = db.collection("Subscriptions").doc(uid);
+  await sub_ref.set(copy_sub);
 
   return subscription.customer;
 };
@@ -75,19 +69,34 @@ const updateUser = async (session, uid) => {
 
 // update user permission
 const updatePermission = async (subscription) => {
-  const { id, customer, status } = subscription;
   const userRef = await db
     .collection("Users")
-    .where("customer", "==", customer)
-    .where("subscription", "==", id)
+    .where("customer", "==", subscription.customer)
     .get();
-  console.log(userRef.docs[0]);
-  await db.collection("Users").doc(userRef.docs[0].id).update(
-    {
-      vip: status,
+  const lineItem = subscription.items.data[0];
+  const price = lineItem.price;
+  const copy_data = {
+    subInfo: {
+      id: subscription.id,
+      status: subscription.status,
+      interval: price.recurring.interval || null,
+      intervalCount: price.recurring.interval_count || null,
+      createdAt: subscription.created,
+      periodStartsAt: subscription.current_period_start,
+      periodEndsAt: subscription.current_period_end,
+      trialStartsAt: subscription.trial_start || null,
+      trialEndsAt: subscription.trial_end || null,
     },
-    { merge: true },
-  );
+  };
+
+  console.log("copy data", userRef.docs[0].id);
+  const sub_col_ref = db.doc(`Users/${userRef.docs[0].id}`);
+
+  if (sub_col_ref) {
+    sub_col_ref.update(copy_data, { merge: true });
+  } else {
+    sub_col_ref.set(copy_data);
+  }
 };
 
 // directed  awaiting payment  paided   failed
@@ -126,16 +135,17 @@ const buffer = (req) => {
 
 const StripeHook = async (request, response) => {
   // console.log("event from stripe are coming****************************");
-  // const rawBody = await buffer(request);
-  // const sig = request.headers["stripe-signature"];
+  const rawBody = await buffer(request);
+  const sig = request.headers["stripe-signature"];
   // console.log("rawBody:", rawBody);
   // console.log("sig:", sig);
-  let event = request.body;
-  // try {
-  //   event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
-  // } catch (err) {
-  //   return response.status(400).send(`Webhook Error: ${err.message}`);
-  // }
+  let event = null;
+  console.log("event type::::", event.type);
+  try {
+    event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
+  } catch (err) {
+    return response.status(400).send(`Webhook Error: ${err.message}`);
+  }
 
   switch (event.type) {
     case "checkout.session.completed": {
@@ -147,13 +157,14 @@ const StripeHook = async (request, response) => {
       // A delayed notification payment will have an `unpaid` status, as
       // you're still waiting for funds to be transferred from the customer's
       // account.
-      console.log("checkout.session.completed", session.id);
+      console.log("checkout.session.completed");
       const uid = await updateOrder(session);
       await updateUser(session, uid);
       // await fulfillOrder(session);
 
       break;
     }
+
     // special payment delay
     case "checkout.session.async_payment_succeeded": {
       console.log("checkout.session.async_payment_succeeded");
@@ -181,7 +192,7 @@ const StripeHook = async (request, response) => {
     case "customer.subscription.created": {
       console.log("customer.subscription.created");
       const subscription = event.data.object;
-      await refreshSubscription(subscription);
+      // await refreshSubscription(subscription);
       await updatePermission(subscription);
       break;
     }
@@ -192,8 +203,8 @@ const StripeHook = async (request, response) => {
       const subscription = event.data.object;
 
       // Send an email to the customer asking them to retry their order
-      refreshSubscription(subscription);
-      updatePermission(subscription);
+      // refreshSubscription(subscription);
+      await updatePermission(subscription);
 
       break;
     }
@@ -201,11 +212,11 @@ const StripeHook = async (request, response) => {
     // canceled
     case "subscription_schedule.canceled": {
       console.log("subscription_schedule.canceled");
-      const session = event.data.object;
+      const subscription = event.data.object;
 
       // Send an email to the customer asking them to retry their order
-      refreshSubscription(subscription);
-      updatePermission(subscription);
+      // refreshSubscription(subscription);
+      await updatePermission(subscription);
 
       break;
     }
@@ -213,8 +224,9 @@ const StripeHook = async (request, response) => {
     // end
     case "customer.subscription.deleted": {
       console.log("customer.subscription.deleted");
-      refreshSubscription(subscription);
-      updatePermission(subscription);
+      const subscription = event.data.object;
+      // refreshSubscription(subscription);
+      await updatePermission(subscription);
       break;
     }
   }
@@ -224,7 +236,7 @@ const StripeHook = async (request, response) => {
 
 export const config = {
   api: {
-    bodyParser: true,
+    bodyParser: false,
   },
 };
 

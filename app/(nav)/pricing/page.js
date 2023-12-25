@@ -8,9 +8,21 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
 );
 
+let inputs = [
+    [{
+    name: "price_id",
+    value: "price_1OOtKeEGxooraCtKtzHHQsaj" // month plan
+   }],
+   [{
+    name: "price_id",
+    value: "price_1OPfWyEGxooraCtK8Q6scV55" // day plan
+   }]
+   
+  ]
+
+
 const Pricing = async ({}) => {
  let status = null;
- let inputs = [];
  const sessionCookie = (cookies().get("session") || {}).value;
 
  if(!sessionCookie) {
@@ -18,25 +30,20 @@ const Pricing = async ({}) => {
  } else {
   const user = await getUserAuth(sessionCookie);
 
+ 
   
   if (!user) {
     status = "/expired"; // unauth
   } else {
-    const { displayName, email, photoURL, vip, subscription, id } = user;
-    console.log("result profile:", user);
-    const sub_id = subscription[0];
-
-    inputs = [{
-      name: "price_id",
-      value: "price_1OOtKeEGxooraCtKtzHHQsaj"
-     },{
-      name:"uid",
-      value: user.id
-     }]
+    const { displayName, email, photoURL, vip, subscription, id, subInfo={}, customer } = user;
+    const combinedPricingTage = inputs.map(item => {
+      return [...item, {name: "uid", value: user.id}]
+    });
+    inputs = combinedPricingTage;
+    console.log("subInfo status:",subInfo.status)
+ 
   
-    let customer = null;
-  
-    if (vip) { // subscripted user
+    if (customer && subInfo.status === "active") { // subscripted user todo what ever they successed
       redirect("/profile")
       return null;
     }
@@ -57,10 +64,10 @@ const Pricing = async ({}) => {
         <div className="p-1 bg-blue-200"></div>
         <div className="p-8">
           <h2 className="text-3xl font-bold text-gray-800 mb-4">
-            Basic Plan
+            Basic Plan 1 Month
           </h2>
           <p className="text-gray-600 mb-6">Ideal for small businesses</p>
-          <p className="text-4xl font-bold text-gray-800 mb-6">$19.99</p>
+          <p className="text-4xl font-bold text-gray-800 mb-6">$0.01</p>
           <ul className="text-sm text-gray-600 mb-6">
             <li className="mb-2 flex items-center">
               <svg
@@ -77,7 +84,7 @@ const Pricing = async ({}) => {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              10 Users
+              1 Users
             </li>
             <li className="mb-2 flex items-center">
               <svg
@@ -115,7 +122,7 @@ const Pricing = async ({}) => {
             </li>
           </ul>
         </div>
-        { status === null ? <PayForm action="/api/checkout_session" inputs={inputs}>
+        { status === null ? <PayForm action="/api/checkout_session" inputs={inputs[0]}>
           <div className="p-4">
             <input
               type="submit"
@@ -138,9 +145,9 @@ const Pricing = async ({}) => {
       <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
         <div className="p-1 bg-green-200"></div>
         <div className="p-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Pro Plan</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">Pro Plan 1 day</h2>
           <p className="text-gray-600 mb-6">Perfect for growing businesses</p>
-          <p className="text-4xl font-bold text-gray-800 mb-6">$49.99</p>
+          <p className="text-4xl font-bold text-gray-800 mb-6">$0.02</p>
           <ul className="text-sm text-gray-600 mb-6">
             <li className="mb-2 flex items-center">
               <svg
@@ -157,7 +164,7 @@ const Pricing = async ({}) => {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              25 Users
+              1 Users
             </li>
             <li className="mb-2 flex items-center">
               <svg
@@ -195,11 +202,20 @@ const Pricing = async ({}) => {
             </li>
           </ul>
         </div>
-        <div className="p-4">
+        { status === null ? <PayForm action="/api/checkout_session" inputs={inputs[1]}>
+          <div className="p-4">
+            <input
+              type="submit"
+              value="Select Plan"
+              className="w-full bg-green-500 text-white rounded-full px-4 py-2 hover:bg-green-700 focus:outline-none focus:shadow-outline-green active:bg-green-800"
+            />
+          </div>
+        </PayForm>
+      :<div className="p-4">
           <button className="w-full bg-green-500 text-white rounded-full px-4 py-2 hover:bg-green-700 focus:outline-none focus:shadow-outline-green active:bg-green-800">
             Select Plan
           </button>
-        </div>
+      </div>}
       </div>
       {/* Pricing Card 3 */}
       <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
