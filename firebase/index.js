@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs
 import firebase from "firebase/compat/app";
+import VConsole from "vconsole";
 
 const clientCredentials = {
   apiKey: "AIzaSyA-MajJQk5VQmjQ2Mu8wd6UNm4aFpWnQHA",
@@ -14,5 +15,12 @@ const clientCredentials = {
 if (!firebase.apps.length) {
   firebase.initializeApp(clientCredentials);
 }
+if (new URL(window.location.href).searchParams.get("eruda") === "1") {
+  setTimeout(() => {
+    const vConsole = new VConsole({ theme: "dark" });
+  }, 5000)
+
+}
+
 console.log("firebase font-end initialted...");
 export default firebase;
