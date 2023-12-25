@@ -65,6 +65,7 @@ const setSessionToken = async (userCredential, redirectUrl) => {
   const idToken = await user.getIdToken();
 
   const userInfo = await getDoc(doc(db, "Users", user.uid));
+  console.log("userInfo new login:", userInfo);
   if (!userInfo.exists()) {
     await setDoc(doc(db, "Users", user.uid), {
       id: user.uid,
@@ -89,6 +90,7 @@ const setSessionToken = async (userCredential, redirectUrl) => {
 
   const result = await fetch("/api/session_login", fetchOptions);
 
+  console.log("fetch result", result);
   // A page redirect would suffice as the persistence is set to NONE.
   // await auth.signOut();
 

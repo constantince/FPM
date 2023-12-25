@@ -62,6 +62,7 @@ const setSessionToken = async (userCredential, redirectUrl) => {
     body: JSON.stringify({ idToken, csrfToken: 1000, vip: 0 }), // Convert JavaScript object to JSON string
   };
 
+  console.log("url fetched...", fetchOptions);
   await fetch("/api/session_signup", fetchOptions);
 
   // A page redirect would suffice as the persistence is set to NONE.

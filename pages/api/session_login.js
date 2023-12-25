@@ -19,6 +19,8 @@ export default async function SessionLogin(req, res) {
     expiresIn: expiresIn * 1000,
   });
 
+  console.log("session cookie created:", sessionCookie);
+
   if (sessionCookie) {
     // Set cookie policy for session cookie.
     const options = {

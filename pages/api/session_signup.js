@@ -20,6 +20,8 @@ export default async function SessionSignUp(req, res) {
     expiresIn: expiresIn * 1000,
   });
 
+  console.log("session cookie created:", sessionCookie);
+
   if (sessionCookie) {
     // Set cookie policy for session cookie.
     const options = {
@@ -32,10 +34,6 @@ export default async function SessionSignUp(req, res) {
     const cookies = {
       session: {
         value: sessionCookie,
-        options,
-      },
-      vip: {
-        value: vip,
         options,
       },
     };
@@ -53,7 +51,9 @@ export default async function SessionSignUp(req, res) {
     //   "Set-Cookie",
     //   `vip=0; HttpOnly; Secure; Max-Age=${options.maxAge}`
     // );
+    console.log("cookieHeraders:", cookieHeaders);
     res.setHeader("Set-Cookie", cookieHeaders);
+
     // res.setHeader("Set-Cookie", cookie.serialize("vip", 0, options));
     // res.cookies.set("session", sessionCookie, options);
     res.status(200).json({ code: 0, status: "success" });

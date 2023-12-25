@@ -15,12 +15,12 @@ const clientCredentials = {
 if (!firebase.apps.length) {
   firebase.initializeApp(clientCredentials);
 }
-if (new URL(window.location.href).searchParams.get("eruda") === "1") {
-  setTimeout(() => {
-    const vConsole = new VConsole({ theme: "dark" });
-  }, 5000)
+// if (new URL(window.location.href).searchParams.get("eruda") === "1") {
+// setTimeout(() => {
+//   const vConsole = new VConsole({ theme: "dark" });
+// }, 5000);
 
-}
+// }
 
 console.log("firebase font-end initialted...");
 export default firebase;
