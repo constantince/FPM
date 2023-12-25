@@ -14,5 +14,5 @@ const clientCredentials = {
 if (!firebase.apps.length) {
   firebase.initializeApp(clientCredentials);
 }
-
+console.log("firebase font-end initialted...");
 export default firebase;

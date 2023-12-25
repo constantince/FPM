@@ -140,7 +140,7 @@ const StripeHook = async (request, response) => {
   // console.log("rawBody:", rawBody);
   // console.log("sig:", sig);
   let event = null;
-  console.log("event type::::", event.type);
+  // console.log("event type::::", event.type);
   try {
     event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
   } catch (err) {

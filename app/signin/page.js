@@ -71,8 +71,6 @@ const setSessionToken = async (userCredential, redirectUrl) => {
       displayName: user.displayName,
       email: user.email,
       photoURL: user.photoURL,
-      subscription: null,
-      vip: 0,
       createdTime: serverTimestamp(),
     });
   }
