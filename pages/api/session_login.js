@@ -1,3 +1,4 @@
+import admin from "/firebase/admin";
 import { getAuth } from "firebase-admin/auth";
 import cookie from "cookie";
 export default async function SessionLogin(req, res) {
