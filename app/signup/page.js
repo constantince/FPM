@@ -8,7 +8,6 @@ import {
   inMemoryPersistence,
   signInWithPopup,
 } from "firebase/auth";
-import { useRouter } from "next/navigation";
 import "../../firebase/index";
 // import firebase from "firebase/compat/app";
 // import "firebase/compat/auth";
@@ -20,6 +19,9 @@ import {
   getDoc,
   serverTimestamp,
 } from "firebase/firestore";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -71,31 +73,39 @@ const setSessionToken = async (userCredential, redirectUrl) => {
   window.location.replace(redirectUrl);
 };
 
-const onSubmit = (e) => {
-  e.preventDefault();
-  // return fetch("/api/cookie_test");
-
-  const email = e.target.email.value;
-  const password = e.target.password.value;
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      setSessionToken(userCredential.user, "/profile");
-      // ...
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(
-        "google login error: code",
-        errorCode,
-        " message:",
-        errorMessage,
-      );
-      // ..
-    });
-};
-
 const SingUp = () => {
+  const router = useRouter();
+
+  const onSubmit = (e) => {
+    router.push("/loading");
+    e.preventDefault();
+    // return fetch("/api/cookie_test");
+
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        setSessionToken(userCredential.user, "/profile");
+        router.back();
+        // ...
+      })
+      .catch((error) => {
+        router.back();
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if (errorCode === "auth/email-already-in-use") {
+        }
+        console.log(
+          "google login error: code",
+          errorCode,
+          " message:",
+          errorMessage,
+        );
+        // ..
+      });
+  };
+
   return (
     <div className="max-w-[280px] mx-auto">
       <div className="flex flex-col items-center mt-[10vh]">
