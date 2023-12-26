@@ -66,6 +66,7 @@ export default function Home() {
     }
 
     // if (!file) return setWarn("please choose a file first");
+
     const { subInfo = {} } = user;
 
     if (subInfo.status !== "active")
