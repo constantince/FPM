@@ -92,7 +92,7 @@ const updatePermission = async (subscription) => {
     return console.log("hook_for_stripe.js line 91:", "userRef not exists!");
   }
 
-  console.log("copy data", userRef.docs[0].id);
+  console.log("hook_for_stripe.js line 95", userRef.docs[0].id);
   const sub_col_ref = db.doc(`Users/${userRef.docs[0].id}`);
 
   if (sub_col_ref) {
@@ -162,6 +162,7 @@ const StripeHook = async (request, response) => {
       // account.
       console.log("checkout.session.completed");
       const uid = await updateOrder(session);
+      console.log("hook_for_stripe line 165", uid);
       await updateUser(session, uid);
       // await fulfillOrder(session);
 

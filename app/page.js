@@ -33,20 +33,20 @@ export default function Home() {
   const router = useRouter();
   function onChange(e) {
     e.preventDefault();
-    // const file = e.target.files[0];
+    const file = e.target.files[0];
     // console.log(file);
-    // if (/^audio\/(mp3|wav|mpeg)$/g.test(file.type)) {
-    //   // test the file type
-    //   if (file.size <= 8 * 1024 * 1024) {
-    //     // test the file size
-    //     setFile(file);
-    //     setName(file.name);
-    //   } else {
-    //     setWarn("too big..");
-    //   }
-    // } else {
-    //   setWarn("type invaild..");
-    // }
+    if (file && /^audio\/(mp3|wav|mpeg)$/g.test(file.type)) {
+      // test the file type
+      if (file.size <= 8 * 1024 * 1024) {
+        // test the file size
+        setFile(file);
+        setName(file.name);
+      } else {
+        alert("too big..");
+      }
+    } else {
+      alert("type invaild..");
+    }
   }
 
   // onAuthStateChanged(getAuth(), (user) => {
@@ -70,9 +70,9 @@ export default function Home() {
     const { subInfo = {} } = user;
 
     if (subInfo.status !== "active")
-      return setWarn("You are not a memeber, please subscribed first.");
+      return alert("You are not a memeber, please subscribed first.");
 
-    return setWarn("congraguation!!");
+    return alert("congraguation!!");
 
     const storageRef = ref(storage, "audios/" + file.name);
     const uploadTask = uploadBytesResumable(storageRef, file, {
@@ -167,13 +167,12 @@ export default function Home() {
   //     <a href="/transcription/">without auth</a>
   //   </>
   // );
-  console.log("what is going on preview...");
+  // console.log("what is going on preview...");
   return (
     <>
       <Nav />
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col">
-          <Link href="/tips">show the modal?</Link>
           <form
             onSubmit={onSubmit}
             className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col"

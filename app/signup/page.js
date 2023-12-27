@@ -94,9 +94,9 @@ const SingUp = () => {
         router.back();
         const errorCode = error.code;
         const errorMessage = error.message;
-        if (errorCode === "auth/email-already-in-use") {
-          router.push("/tips/" + errorCode);
-        }
+        // if (errorCode === "auth/email-already-in-use") {
+        alert(errorMessage);
+        // }
         console.log(
           "google login error: code",
           errorCode,

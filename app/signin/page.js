@@ -25,10 +25,12 @@ import {
 const auth = getAuth();
 const db = getFirestore();
 const provider = new GoogleAuthProvider();
+var route = null;
 // import firebaseui from "firebaseui";
 // setPersistence(auth, inMemoryPersistence);
 
 function googleAuth() {
+  route.push("/loading");
   signInWithPopup(auth, provider)
     .then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
@@ -42,13 +44,15 @@ function googleAuth() {
     })
     .catch((error) => {
       // Handle Errors here.
+
       const errorCode = error.code;
       const errorMessage = error.message;
       // The email of the user's account used.
       const email = error.customData.email;
       // The AuthCredential type that was used.
       const credential = GoogleAuthProvider.credentialFromError(error);
-
+      alert(errorMessage);
+      route.back();
       console.log(
         "google login error: code",
         errorCode,
@@ -99,6 +103,7 @@ const setSessionToken = async (userCredential, redirectUrl) => {
 
 const onSubmit = (e) => {
   e.preventDefault();
+  route.push("/loading");
   const email = e.target.email.value;
   const password = e.target.password.value;
   signInWithEmailAndPassword(auth, email, password)
@@ -109,6 +114,8 @@ const onSubmit = (e) => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
+      alert(errorMessage);
+      route.back();
       console.log(
         "google login error: code",
         errorCode,
@@ -121,6 +128,7 @@ const onSubmit = (e) => {
 
 let ui = null;
 const SingIn = () => {
+  route = useRouter();
   return (
     <div className="max-w-[280px] mx-auto">
       <div className="flex flex-col items-center mt-[10vh]">
