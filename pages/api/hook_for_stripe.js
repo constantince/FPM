@@ -65,6 +65,34 @@ const updateUser = async (session, uid) => {
     },
     { merge: true },
   );
+
+  const customerDoc = db.collection("Customers/" + customer);
+  const copy_data = { order_status: status, order_id: id, uid };
+  if (customerDoc.exsits) {
+    console.log("hook_for_stripe.js line 72", "doc exsits");
+    await customerDoc.update(copy_data, { merge: true });
+  } else {
+    awiat customerDoc.set(copy_data);
+  }
+};
+
+// store the customer collection
+const storeCustomer = async (subscription) => {
+  const customer = subscription.customer;
+  const customerDoc = db.collection("Customers/" + customer);
+
+  const lineItem = subscription.items.data[0];
+  const price = lineItem.price;
+  const copy_data = {
+    sub_id: subscription.id,
+    sub_status: subscription.status
+  };
+  if (customerDoc.exsits) {
+    console.log("hook_for_stripe.js line 91", "doc exsits");
+   await customerDoc.update(copy_data, { merge: true });
+  } else {
+   await customerDoc.set(copy_data);
+  }
 };
 
 // update user permission
@@ -76,6 +104,7 @@ const updatePermission = async (subscription) => {
   const lineItem = subscription.items.data[0];
   const price = lineItem.price;
   const copy_data = {
+    customer: subscription.customer,
     subInfo: {
       id: subscription.id,
       status: subscription.status,
@@ -88,12 +117,17 @@ const updatePermission = async (subscription) => {
       trialEndsAt: subscription.trial_end || null,
     },
   };
+  // const sub_col_ref = db.doc(`Users/${userRef.docs[0].id}`);
+
   if (userRef.empty) {
-    return console.log("hook_for_stripe.js line 92:", "userRef not exists!");
+    return console.log(
+      "hook_for_stripe.js line 92:",
+      "relevant customer userRef not exists!",
+      "let create one",
+    );
   }
 
   console.log("hook_for_stripe.js line 95", userRef.docs[0].id);
-  const sub_col_ref = db.doc(`Users/${userRef.docs[0].id}`);
 
   if (sub_col_ref) {
     sub_col_ref.update(copy_data, { merge: true });
@@ -138,17 +172,17 @@ const buffer = (req) => {
 
 const StripeHook = async (request, response) => {
   // console.log("event from stripe are coming****************************");
-  const rawBody = await buffer(request);
-  const sig = request.headers["stripe-signature"];
+  // const rawBody = await buffer(request);
+  // const sig = request.headers["stripe-signature"];
   // console.log("rawBody:", rawBody);
   // console.log("sig:", sig);
-  let event = null;
+  let event = request.body;
   // console.log("event type::::", event.type);
-  try {
-    event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
-  } catch (err) {
-    return response.status(400).send(`Webhook Error: ${err.message}`);
-  }
+  // try {
+  //   event = stripe.webhooks.constructEvent(rawBody, sig, endpointSecret);
+  // } catch (err) {
+  //   return response.status(400).send(`Webhook Error: ${err.message}`);
+  // }
 
   switch (event.type) {
     case "checkout.session.completed": {
@@ -240,7 +274,7 @@ const StripeHook = async (request, response) => {
 
 export const config = {
   api: {
-    bodyParser: false,
+    bodyParser: true,
   },
 };
 
