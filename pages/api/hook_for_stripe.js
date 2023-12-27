@@ -88,8 +88,8 @@ const updatePermission = async (subscription) => {
       trialEndsAt: subscription.trial_end || null,
     },
   };
-  if (!userRef.exists) {
-    return console.log("hook_for_stripe.js line 91:", "userRef not exists!");
+  if (userRef.empty) {
+    return console.log("hook_for_stripe.js line 92:", "userRef not exists!");
   }
 
   console.log("hook_for_stripe.js line 95", userRef.docs[0].id);
