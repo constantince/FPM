@@ -31,7 +31,7 @@ export default function Nav() {
 
   // const { data, isLoading, error } = useGetUser("test.");
   const user = useContext(UserContext);
-  console.log("user in nav", user);
+  // console.log("user in nav", user);
 
   return (
     <>

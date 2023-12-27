@@ -39,6 +39,7 @@ export default async function RootLayout({ children, modal }) {
   const v = user
     ? { uid: user.id, email: user.email, subInfo: user.subInfo }
     : null;
+
   return (
     <html lang="en">
       <body className={inter.className}>

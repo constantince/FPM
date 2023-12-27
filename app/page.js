@@ -167,6 +167,7 @@ export default function Home() {
   //     <a href="/transcription/">without auth</a>
   //   </>
   // );
+  console.log("what is going on preview...");
   return (
     <>
       <Nav />

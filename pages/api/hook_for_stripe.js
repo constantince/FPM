@@ -88,6 +88,9 @@ const updatePermission = async (subscription) => {
       trialEndsAt: subscription.trial_end || null,
     },
   };
+  if (!userRef.exists) {
+    return console.log("hook_for_stripe.js line 91:", "userRef not exists!");
+  }
 
   console.log("copy data", userRef.docs[0].id);
   const sub_col_ref = db.doc(`Users/${userRef.docs[0].id}`);
