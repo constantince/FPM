@@ -45,9 +45,9 @@ export default async function handler(req, res) {
 
       // save the session to database
       // await assignCustomerToUser(uid, session.customer);
-      const order = await createOrder(uid, session.id, session.status);
+      // const order = await createOrder(uid, session.id, session.status);
 
-      if (order) {
+      if (session) {
         res.redirect(303, session.url);
         return;
       }

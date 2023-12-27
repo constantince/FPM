@@ -59,8 +59,6 @@ const updateUser = async (session, uid) => {
   const user_doc_ref = db.collection("Users").doc(uid);
   await user_doc_ref.update(
     {
-      subscription,
-      customer_email,
       customer,
     },
     { merge: true },
@@ -72,7 +70,7 @@ const updateUser = async (session, uid) => {
     console.log("hook_for_stripe.js line 72", "doc exsits");
     await customerDoc.update(copy_data, { merge: true });
   } else {
-    awiat customerDoc.set(copy_data);
+    await customerDoc.set(copy_data);
   }
 };
 
@@ -85,13 +83,13 @@ const storeCustomer = async (subscription) => {
   const price = lineItem.price;
   const copy_data = {
     sub_id: subscription.id,
-    sub_status: subscription.status
+    sub_status: subscription.status,
   };
   if (customerDoc.exsits) {
     console.log("hook_for_stripe.js line 91", "doc exsits");
-   await customerDoc.update(copy_data, { merge: true });
+    await customerDoc.update(copy_data, { merge: true });
   } else {
-   await customerDoc.set(copy_data);
+    await customerDoc.set(copy_data);
   }
 };
 
@@ -209,7 +207,7 @@ const StripeHook = async (request, response) => {
       const session = event.data.object;
 
       // Fulfill the purchase...
-      await fulfillOrder(session);
+      // await fulfillOrder(session);
 
       break;
     }
@@ -231,7 +229,7 @@ const StripeHook = async (request, response) => {
       console.log("customer.subscription.created");
       const subscription = event.data.object;
       // await refreshSubscription(subscription);
-      await updatePermission(subscription);
+      await storeCustomer(subscription);
       break;
     }
 
@@ -242,7 +240,7 @@ const StripeHook = async (request, response) => {
 
       // Send an email to the customer asking them to retry their order
       // refreshSubscription(subscription);
-      await updatePermission(subscription);
+      await storeCustomer(subscription);
 
       break;
     }
@@ -254,7 +252,7 @@ const StripeHook = async (request, response) => {
 
       // Send an email to the customer asking them to retry their order
       // refreshSubscription(subscription);
-      await updatePermission(subscription);
+      await storeCustomer(subscription);
 
       break;
     }
@@ -264,7 +262,7 @@ const StripeHook = async (request, response) => {
       console.log("customer.subscription.deleted");
       const subscription = event.data.object;
       // refreshSubscription(subscription);
-      await updatePermission(subscription);
+      await storeCustomer(subscription);
       break;
     }
   }
