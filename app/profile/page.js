@@ -7,6 +7,7 @@ import getUserAuth from "../../utils/server_user_auth";
 import { redirect } from "next/navigation";
 import stripe_sdk from "stripe";
 import dateFormat from "dateformat";
+import Card from "./cards";
 
 const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 
@@ -48,6 +49,7 @@ const Profile = async ({}) => {
   console.log("customer:::", customer);
   return (
     <div className="container mx-auto my-60">
+      <Card />
       <div>
         <div className="bg-white relative shadow rounded-lg w-5/6 md:w-5/6  lg:w-4/6 xl:w-3/6 mx-auto">
           <div className="flex justify-center">
