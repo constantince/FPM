@@ -32,7 +32,7 @@ const setSessionToken = async (userCredential, redirectUrl) => {
   // get idtoken
   const idToken = await user.getIdToken();
 
-  const docRef = doc(db, "Users", user.uid);
+  const docRef = doc(db, "users", user.uid);
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
@@ -101,7 +101,7 @@ const SingUp = () => {
           "google login error: code",
           errorCode,
           " message:",
-          errorMessage,
+          errorMessage
         );
         // ..
       });

@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs
 import firebase from "firebase/compat/app";
-import VConsole from "vconsole";
+// import VConsole from "vconsole";
 
 const clientCredentials = {
   apiKey: "AIzaSyA-MajJQk5VQmjQ2Mu8wd6UNm4aFpWnQHA",

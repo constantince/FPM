@@ -9,7 +9,7 @@ const navigation = [
   { name: "Calendar", href: "#", current: false },
 ];
 
-console.log("what are your type...");
+// console.log("what are your type...");
 
 export default function Nav() {
   // let user = null;

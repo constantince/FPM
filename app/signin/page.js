@@ -57,7 +57,7 @@ function googleAuth() {
         "google login error: code",
         errorCode,
         " message:",
-        errorMessage,
+        errorMessage
       );
       // ...
     });
@@ -68,10 +68,10 @@ const setSessionToken = async (userCredential, redirectUrl) => {
   // get idtoken
   const idToken = await user.getIdToken();
 
-  const userInfo = await getDoc(doc(db, "Users", user.uid));
+  const userInfo = await getDoc(doc(db, "users", user.uid));
   console.log("userInfo new login:", userInfo);
   if (!userInfo.exists()) {
-    await setDoc(doc(db, "Users", user.uid), {
+    await setDoc(doc(db, "users", user.uid), {
       id: user.uid,
       displayName: user.displayName,
       email: user.email,
@@ -120,7 +120,7 @@ const onSubmit = (e) => {
         "google login error: code",
         errorCode,
         " message:",
-        errorMessage,
+        errorMessage
       );
       // ..
     });

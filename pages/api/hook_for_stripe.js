@@ -56,12 +56,12 @@ const updateUser = async (session, uid) => {
   // check uid
   const { id, subscription, customer, customer_email, status } = session;
 
-  const user_doc_ref = db.collection("Users").doc(uid);
+  const user_doc_ref = db.collection("users").doc(uid);
   await user_doc_ref.update(
     {
       customer,
     },
-    { merge: true },
+    { merge: true }
   );
 
   const customerDoc = db.collection("Customers/" + customer);
@@ -96,7 +96,7 @@ const storeCustomer = async (subscription) => {
 // update user permission
 const updatePermission = async (subscription) => {
   const userRef = await db
-    .collection("Users")
+    .collection("users")
     .where("customer", "==", subscription.customer)
     .get();
   const lineItem = subscription.items.data[0];
@@ -121,7 +121,7 @@ const updatePermission = async (subscription) => {
     return console.log(
       "hook_for_stripe.js line 92:",
       "relevant customer userRef not exists!",
-      "let create one",
+      "let create one"
     );
   }
 
