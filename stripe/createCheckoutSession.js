@@ -20,7 +20,9 @@ export async function createCheckoutSession(uid, price_id, req, res) {
     });
 
   // Wait for the CheckoutSession to get attached by the extension
+  console.log("createCheckoutSession.js line 23", "waitting for redirect...");
   checkoutSessionRef.onSnapshot(async (snap) => {
+    console.log("createCheckoutSession.js line 25", "now...", snap.data());
     const { sessionId, url } = snap.data();
     if (sessionId) {
       // We have a session, let's redirect to Checkout

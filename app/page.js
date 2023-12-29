@@ -68,9 +68,9 @@ export default function Home() {
 
     // if (!file) return setWarn("please choose a file first");
 
-    const { subInfo = {} } = user;
+    const { role } = user;
 
-    if (subInfo.status !== "active")
+    if (role !== "premium")
       return alert("You are not a memeber, please subscribed first.");
 
     return alert("congraguation!!");

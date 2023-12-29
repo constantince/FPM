@@ -1,7 +1,10 @@
 import admin from "/firebase/admin";
 import { getAuth } from "firebase-admin/auth";
-export default async (sessionCookie) => {
+import { cookies } from "next/headers";
+
+export default async () => {
   let user = null;
+  const sessionCookie = (cookies().get("session") || {}).value;
   if (sessionCookie) {
     // console.log("thhis is session cookie in nav", sessionCookie);
     const token = await getAuth()

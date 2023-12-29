@@ -1,9 +1,9 @@
 import { getApp } from "firebase-admin/app";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
-import BillingBtn from "../../comps/pay_form";
-import { cookies } from "next/headers";
-import getUserAuth from "../../utils/server_user_auth";
+import BillingBtn from "../../../comps/pay_form";
+
+import getUserAuth from "../../../utils/server_user_auth";
 import { redirect } from "next/navigation";
 import stripe_sdk from "stripe";
 import dateFormat from "dateformat";
@@ -12,8 +12,7 @@ const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 
 const db = admin.firestore();
 const Profile = async ({}) => {
-  const sessionCookie = (cookies().get("session") || {}).value;
-  const user = await getUserAuth(sessionCookie);
+  const user = await getUserAuth();
 
   // console.log("user session verify...", user);
   if (!user) {
@@ -22,9 +21,6 @@ const Profile = async ({}) => {
   const { displayName, email, photoURL, role, stripeId } = user;
   // console.log("result profile:", user);
   console.log("profile page.js line 28:", stripeId);
-  // let customer = null;
-  let d_string = null;
-  let sub_records = [];
   return (
     <div className="container mx-auto my-60">
       <div>
@@ -43,16 +39,20 @@ const Profile = async ({}) => {
             <p className="text-center text-sm text-gray-400 font-medium">
               {email}
             </p>
-            {d_string && (
-              <p className="text-center text-sm text-gray-400 font-medium">
-                subscription end date: {d_string}
-              </p>
-            )}
-            <p>
-              <span></span>
-            </p>
             <div className="my-5 px-6">
-              {role === "premium" ? <h1>Toedo</h1> : null}
+              {role === "premium" && stripeId ? (
+                <BillingBtn
+                  action="/api/manage_billing_portal"
+                  method="post"
+                  inputs={[{ name: "customer", value: stripeId }]}
+                >
+                  <input
+                    type="submit"
+                    className="text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white"
+                    value="Manage bill and subscription"
+                  />
+                </BillingBtn>
+              ) : null}
             </div>
             <div className="flex justify-between items-center my-5 px-6">
               <a
@@ -63,9 +63,9 @@ const Profile = async ({}) => {
               </a>
             </div>
             <div className="w-full">
-              <h3 className="font-medium text-gray-900 text-left px-6">
-                Recent Subscriptions
-              </h3>
+              <a href="/api/session_logout"><h3 className="font-medium text-gray-900 text-left px-6">
+                Log out
+              </h3></a>
             </div>
           </div>
         </div>

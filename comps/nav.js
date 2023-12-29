@@ -1,6 +1,7 @@
 "use client";
 import { useContext } from "react";
 import { UserContext } from "../utils/user-provider";
+import Link from "next/link";
 
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
@@ -32,23 +33,21 @@ export default function Nav() {
   // const { data, isLoading, error } = useGetUser("test.");
   const user = useContext(UserContext);
   // console.log("user in nav", user);
-
+  const { uid, role, email } = user || {};
   return (
     <>
       <nav className="bg-white-200 shadow shadow-gray-300 w-100 px-8 md:px-auto">
         <div className="md:h-16 h-28 mx-auto md:px-4 container flex items-center justify-between flex-wrap md:flex-nowrap">
-          <div className="text-indigo-500 md:order-1">Podtransfer</div>
+          <Link href="/">
+            <div className="text-indigo-500 md:order-1">Podtransfer</div>
+          </Link>
           <div className="text-gray-500 order-3 w-full md:w-auto md:order-2">
             <ul className="flex font-semibold justify-between">
-              <li className="md:px-4 md:py-2 text-indigo-500">
-                <a href="/pricing">Pricing</a>
-              </li>
-              {/* <li className="md:px-4 md:py-2 hover:text-indigo-400">
-                <a href="#">About</a>
-              </li>
-              <li className="md:px-4 md:py-2 hover:text-indigo-400">
-                <a href="#">Contact</a>
-              </li> */}
+              {role !== "premium" && (
+                <li className="md:px-4 md:py-2 text-indigo-500">
+                  <a href="/pricing">Pricing</a>
+                </li>
+              )}
             </ul>
           </div>
           <div className="order-2 md:order-3">
@@ -65,10 +64,10 @@ export default function Nav() {
                   clipRule="evenodd"
                 />
               </svg>
-              {user ? (
-                <a href="/api/session_logout">Logout</a>
+              {uid ? (
+                <a href="/profile">{user.email}</a>
               ) : (
-                <a href="/signin">Login</a>
+                <a href="/signin">Sign In</a>
               )}
             </button>
           </div>

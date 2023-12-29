@@ -1,4 +1,5 @@
 import { loadStripe } from "@stripe/stripe-js";
+import admin from "/firebase/admin";
 import { cookies } from "next/headers";
 import PayForm from "../../../comps/pay_form";
 import { redirect } from "next/navigation";
@@ -9,32 +10,31 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
 
-let inputs = [
-  [
-    {
-      name: "price_id",
-      value: "price_1OOtKeEGxooraCtKtzHHQsaj", // month plan
-    },
-    {
-      name: "uid",
-      value: null,
-    },
-  ],
-  [
-    {
-      name: "price_id",
-      value: "price_1OSL1kEGxooraCtKy4OrBxuY", // day plan
-    },
-    {
-      name: "uid",
-      value: null,
-    },
-  ],
+const db = admin.firestore();
+
+let priceTag = [
 ];
 
 const Pricing = async ({}) => {
   let status = null;
   const sessionCookie = (cookies().get("session") || {}).value;
+  const pro = await db.collection("products").where("active", "==", true).get();
+
+  // if( !pro.empty ) {
+  //   console.log("pricing page.js line 44:", pro.docs);
+  //   pro.docs.map(item => {
+  //     console.log("pricing page.js line 46:", item.data(), item.id);
+  //   })
+  //   return null;
+  // }
+
+  priceTag = pro.docs.map(item => {
+    return {
+      ...item.data(),
+      formData: [{name: "price_id", value: item.data().metadata.priceId}]
+    }
+    console.log("pricing page.js line 44:", item.data(), item.id);
+  })
 
   if (!sessionCookie) {
     status = "/signin"; // unlogged user
@@ -42,30 +42,41 @@ const Pricing = async ({}) => {
     const user = await getUserAuth(sessionCookie);
 
     if (!user) {
+      
       status = "/expired"; // unauth
     } else {
       const {
         displayName,
         email,
         photoURL,
-        vip,
-        subscription,
         id,
-        subInfo = {},
-        customer,
+        role,
+        stripeId
       } = user;
-      inputs[0][1].value = user.id;
-      inputs[1][1].value = user.id;
+      // inputs[0][1].value = user.id;
+      // inputs[1][1].value = user.id;
+      if( !pro.empty ) {
+        console.log("pricing page.js line 44:", pro.docs);
+        priceTag = pro.docs.map(item => {
+          return {
+            ...item.data(),
+            formData: [{name: "price_id", value: item.data().metadata.priceId}, {name: "uid", value: id}]
+          }
+          console.log("pricing page.js line 46:", item.data(), item.id);
+        })
+  
+      }
       //   console.log(item);
       //   return item.concat([{ name: "uid", value: user.id }]);
       // });
-      console.log("pricing page.js 52 input ", inputs);
+      console.log("pricing page.js 52 priceTag ", priceTag);
       // inputs = combinedPricingTage;
       // console.log("subInfo status:", subInfo.status);
 
-      if (customer && subInfo.status === "active") {
+      if (role === "premium" && stripeId ) {
         // subscripted user todo what ever they successed
         redirect("/profile");
+        return null;
       }
     }
   }
@@ -74,14 +85,14 @@ const Pricing = async ({}) => {
     <div className="bg-gray-100 min-h-screen py-12 flex items-center justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Pricing Card 1 */}
-        <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
-          <div className="p-1 bg-blue-200"></div>
+        {Array.isArray(priceTag) && priceTag.map(price => ( <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
+          <div className={`p-1 bg-${price.metadata.color}-200`}></div>
           <div className="p-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
-              Basic Plan 1 Month
+              {price.name}
             </h2>
-            <p className="text-gray-600 mb-6">Ideal for small businesses</p>
-            <p className="text-4xl font-bold text-gray-800 mb-6">$0.01</p>
+            <p className="text-gray-600 mb-6">{price.description}</p>
+            <p className="text-4xl font-bold text-gray-800 mb-6">{price.metadata.price}</p>
             <ul className="text-sm text-gray-600 mb-6">
               <li className="mb-2 flex items-center">
                 <svg
@@ -137,7 +148,7 @@ const Pricing = async ({}) => {
             </ul>
           </div>
           {status === null ? (
-            <PayForm action="/api/checkout_session" inputs={inputs[0]}>
+            <PayForm action="/api/checkout_session" inputs={price.formData}>
               <div className="p-4">
                 <input
                   type="submit"
@@ -156,10 +167,11 @@ const Pricing = async ({}) => {
               </Link>
             </div>
           )}
-        </div>
+        </div>))}
+       
 
         {/* Pricing Card 2 */}
-        <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
+        {/* <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
           <div className="p-1 bg-green-200"></div>
           <div className="p-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
@@ -238,9 +250,9 @@ const Pricing = async ({}) => {
               </button>
             </div>
           )}
-        </div>
+        </div> */}
         {/* Pricing Card 3 */}
-        <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
+        {/* <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
           <div className="p-1 bg-purple-200"></div>
           <div className="p-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
@@ -307,7 +319,7 @@ const Pricing = async ({}) => {
               Select Plan
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
