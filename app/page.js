@@ -23,6 +23,7 @@ const storage = getStorage();
 //   console.log("voice:--------", downloadURL);
 // });
 
+// console.log("app/page.js line 26:", decodedToken);
 export default function Home() {
   const userInfo = useContext(UserContext);
   const [file, setFile] = useState(null);
@@ -49,12 +50,12 @@ export default function Home() {
     }
   }
 
-  // onAuthStateChanged(getAuth(), (user) => {
-  //   console.log("user:::", user);
+  // onAuthStateChanged(getAuth(), async (user) => {
   //   if (user) {
-  //     setUser(user);
-  //   } else {
-  //     setUser(null);
+  //     await user.getIdToken(true);
+  //     user.getIdTokenResult().then((res) => {
+  //       alert(JSON.stringify(res.claims));
+  //     });
   //   }
   // });
 
@@ -168,6 +169,7 @@ export default function Home() {
   //   </>
   // );
   // console.log("what is going on preview...");
+
   return (
     <>
       <Nav />

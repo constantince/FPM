@@ -41,13 +41,12 @@ const setSessionToken = async (userCredential, redirectUrl) => {
   // creat a user collection
   const userInfo = user.providerData[0];
   const docData = {
-    id: user.uid,
-    displayName: userInfo.displayName,
-    email: userInfo.email,
-    photoURL: userInfo.photoURL,
+    uid: user.uid,
+    displayName: user.displayName,
+    email: user.email,
+    photoURL: user.photoURL,
     emailVerified: user.emailVerified,
-    subscription: [],
-    vip: 0,
+    provider: userInfo.providerId,
     createdTime: serverTimestamp(),
   };
 
@@ -101,7 +100,7 @@ const SingUp = () => {
           "google login error: code",
           errorCode,
           " message:",
-          errorMessage
+          errorMessage,
         );
         // ..
       });

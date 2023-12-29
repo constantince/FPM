@@ -33,6 +33,7 @@ export default async function RootLayout({ children, modal }) {
   // }
 
   const sessionCookie = (cookies().get("session") || {}).value;
+  console.log("app/layout.js line 36: session:::::", sessionCookie);
   const user = await getUserAuth(sessionCookie || "empty");
 
   console.log("user session verify...", user);

@@ -1,4 +1,4 @@
-import { getAuth } from "firebase-admin/auth";
+import { getApp } from "firebase-admin/app";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
 import BillingBtn from "../../comps/pay_form";
@@ -15,36 +15,16 @@ const Profile = async ({}) => {
   const sessionCookie = (cookies().get("session") || {}).value;
   const user = await getUserAuth(sessionCookie);
 
-  console.log("user session verify...", user);
+  // console.log("user session verify...", user);
   if (!user) {
     redirect("/expired");
   }
-  const {
-    displayName,
-    email,
-    photoURL,
-    vip,
-    subscription,
-    customer,
-    subInfo = {},
-  } = user;
-  console.log("result profile:", user);
-
+  const { displayName, email, photoURL, role, stripeId } = user;
+  // console.log("result profile:", user);
+  console.log("profile page.js line 28:", stripeId);
   // let customer = null;
   let d_string = null;
   let sub_records = [];
-  if (customer) {
-    // subscribed user
-    // search subscription_docs
-    // const subscription_docs = await db.collection("Subscriptions").doc(sub_id);
-    d_string = dateFormat(new Date(subInfo.periodEndsAt * 1000), "yyyy-mm-dd");
-    sub_records = await stripe.subscriptions.list({
-      customer,
-      status: "active",
-      limit: 10,
-    });
-  }
-  console.log("customer:::", customer);
   return (
     <div className="container mx-auto my-60">
       <div>
@@ -72,19 +52,7 @@ const Profile = async ({}) => {
               <span></span>
             </p>
             <div className="my-5 px-6">
-              {subInfo.status === "active" && customer ? (
-                <BillingBtn
-                  action="/api/manage_billing_portal"
-                  method="post"
-                  inputs={[{ name: "customer", value: customer }]}
-                >
-                  <input
-                    type="submit"
-                    className="text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white"
-                    value="Manage bill and subscription"
-                  />
-                </BillingBtn>
-              ) : null}
+              {role === "premium" ? <h1>Toedo</h1> : null}
             </div>
             <div className="flex justify-between items-center my-5 px-6">
               <a
@@ -98,31 +66,6 @@ const Profile = async ({}) => {
               <h3 className="font-medium text-gray-900 text-left px-6">
                 Recent Subscriptions
               </h3>
-              {Array.isArray(sub_records.data) &&
-                sub_records.data.map((item) => (
-                  <div
-                    className="mt-5 w-full flex flex-col items-center overflow-hidden text-sm"
-                    key={item.id}
-                  >
-                    <a
-                      href="#"
-                      className="w-full border-t border-gray-100 text-gray-600 py-4 pl-6 pr-3 block hover:bg-gray-100 transition duration-150"
-                    >
-                      <img
-                        src="https://avatars0.githubusercontent.com/u/35900628?v=4"
-                        alt=""
-                        className="rounded-full h-6 shadow-md inline-block mr-2"
-                      />
-                      {item.object} Created at{" "}
-                      <span className="text-gray-500 text-xs">
-                        {dateFormat(
-                          new Date(item.created * 1000),
-                          "yyyy-mm-dd HH:MM:ss"
-                        )}
-                      </span>
-                    </a>
-                  </div>
-                ))}
             </div>
           </div>
         </div>
