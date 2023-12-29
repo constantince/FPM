@@ -85,7 +85,7 @@ const Pricing = async ({}) => {
     <div className="bg-gray-100 min-h-screen py-12 flex items-center justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Pricing Card 1 */}
-        {Array.isArray(priceTag) && priceTag.map(price => ( <div className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
+        {Array.isArray(priceTag) && priceTag.map(price => ( <div key={price.id} className="bg-white rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
           <div className={`p-1 bg-${price.metadata.color}-200`}></div>
           <div className="p-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
