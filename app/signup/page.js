@@ -60,7 +60,7 @@ const setSessionToken = async (userCredential, redirectUrl) => {
       "Content-Type": "application/json", // Assuming JSON data in the request body
       // Add any other headers as needed
     },
-    body: JSON.stringify({ idToken, csrfToken: 1000, vip: 0 }), // Convert JavaScript object to JSON string
+    body: JSON.stringify({ idToken, csrfToken: 1000 }), // Convert JavaScript object to JSON string
   };
 
   console.log("url fetched...", fetchOptions);
@@ -76,13 +76,17 @@ const SingUp = () => {
   const router = useRouter();
 
   const onSubmit = (e) => {
-    router.push("/loading");
     e.preventDefault();
     // return fetch("/api/cookie_test");
 
     const email = e.target.email.value;
     const password = e.target.password.value;
 
+    if (!email || !password) {
+      alert("please fill the email and password");
+      return;
+    }
+    router.push("/loading");
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         setSessionToken(userCredential.user, "/profile");
@@ -108,6 +112,26 @@ const SingUp = () => {
 
   return (
     <div className="max-w-[280px] mx-auto">
+      <Link
+        className="text-black rounded-l-md my-10 py-2 hover:text-blue px-3"
+        href="/signin"
+      >
+        <div className="flex flex-row align-middle">
+          <svg
+            className="w-5 mr-2"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <p className="ml-2">Back</p>
+        </div>
+      </Link>
       <div className="flex flex-col items-center mt-[10vh]">
         <h2 className="mb-5 text-gray-900 font-mono font-bold text-xl">
           Sign Up Now
@@ -118,12 +142,16 @@ const SingUp = () => {
             className="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
             placeholder="Email"
             name="email"
+            pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+            title="email format not correct"
           />
           <input
             type="password"
             name="password"
             className="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
             placeholder="Password"
+            pattern="[a-zA-Z0-9]{8,}"
+            title="password length must more than 8 chartesz"
           />
           <button className="bg-slate-500 hover:bg-slate-700 text-white text-base rounded-lg py-2.5 px-5 transition-colors w-full text-[19px]">
             Sign Up

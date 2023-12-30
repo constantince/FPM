@@ -51,7 +51,7 @@ export function middleware(request) {
   // }
 
   //no auth user can not view these router
-  if (/^\/(profile|transcription)/g.test(request.nextUrl.pathname)) {
+  if (/^\/(profile|transcription|feedback)/g.test(request.nextUrl.pathname)) {
     if (logged) return nextPage;
     return NextResponse.redirect(new URL("/signin", request.url));
   }

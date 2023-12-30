@@ -48,6 +48,11 @@ export default function Nav() {
                   <a href="/pricing">Pricing</a>
                 </li>
               )}
+              {uid && (
+                <li className="md:px-4 md:py-2 text-indigo-500">
+                  <a href="/feedback">Feedback</a>
+                </li>
+              )}
             </ul>
           </div>
           <div className="order-2 md:order-3">

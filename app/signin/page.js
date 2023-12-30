@@ -22,6 +22,8 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 
+import Link from "next/link";
+
 const auth = getAuth();
 const db = getFirestore();
 const provider = new GoogleAuthProvider();
@@ -57,7 +59,7 @@ function googleAuth() {
         "google login error: code",
         errorCode,
         " message:",
-        errorMessage
+        errorMessage,
       );
       // ...
     });
@@ -103,9 +105,16 @@ const setSessionToken = async (userCredential, redirectUrl) => {
 
 const onSubmit = (e) => {
   e.preventDefault();
-  route.push("/loading");
   const email = e.target.email.value;
   const password = e.target.password.value;
+
+  if (!email || !password) {
+    alert("please fill the email and password");
+    return;
+  }
+
+  route.push("/loading");
+
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       setSessionToken(userCredential.user, "/profile");
@@ -120,7 +129,7 @@ const onSubmit = (e) => {
         "google login error: code",
         errorCode,
         " message:",
-        errorMessage
+        errorMessage,
       );
       // ..
     });
@@ -131,6 +140,26 @@ const SingIn = () => {
   route = useRouter();
   return (
     <div className="max-w-[280px] mx-auto">
+      <Link
+        className="text-black rounded-l-md my-10 py-2 hover:text-blue px-3"
+        href="/"
+      >
+        <div className="flex flex-row align-middle">
+          <svg
+            className="w-5 mr-2"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <p className="ml-2">Back Home</p>
+        </div>
+      </Link>
       <div className="flex flex-col items-center mt-[10vh]">
         <h2 className="mb-5 text-gray-900 font-mono font-bold text-xl">
           Log In
@@ -214,12 +243,16 @@ const SingIn = () => {
             className="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
             placeholder="Email"
             name="email"
+            pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
+            title="email format not correct"
           />
           <input
             type="password"
             name="password"
             className="w-full px-6 py-3 mb-2 border border-slate-600 rounded-lg font-medium "
             placeholder="Password"
+            pattern="[a-zA-Z0-9]{8,}"
+            title="password length must more than 8 chartesz"
           />
           <button className="bg-slate-500 hover:bg-slate-700 text-white text-base rounded-lg py-2.5 px-5 transition-colors w-full text-[19px]">
             Log In

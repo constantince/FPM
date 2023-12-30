@@ -1,15 +1,11 @@
 import api from "api";
 
 const sdk = api("@monster-api/v1.0#86raglpmv5tkn");
-sdk.auth(
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImU0ZmQxYzM4YjhlMzQ0YjZhZGJmMWVlZWYzOGEwMWI5IiwiY3JlYXRlZF9hdCI6IjIwMjMtMTEtMjhUMTQ6Mzg6NDQuNzY2MDM4In0.EFO4ErZN0Uox8MBjXtbOW-6HM1nlLSnGFtb2e_yMTGE",
-);
+sdk.auth(process.env.MONSTER_HOOKS_API_KEY);
 
 export function registerHook(webhook_url, url_name) {
   const sdk = require("api")("@monster-api/v1.0#2563z0l33lmd3cemf");
-  sdk.auth(
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImU0ZmQxYzM4YjhlMzQ0YjZhZGJmMWVlZWYzOGEwMWI5IiwiY3JlYXRlZF9hdCI6IjIwMjMtMTEtMjhUMTQ6Mzg6NDQuNzY2MDM4In0.EFO4ErZN0Uox8MBjXtbOW-6HM1nlLSnGFtb2e_yMTGE",
-  );
+  sdk.auth(process.env.MONSTER_HOOKS_API_KEY);
   sdk
     .postWebhook({
       webhook_url,
@@ -31,9 +27,6 @@ export function getHooks(hook_name) {
 async function transcription(file, hook_name, hook_url) {
   // console.log("sdk", sdk);
   // let sdk = api("@monster-api/v1.0#2563z0l33lmd3cemf");
-  // sdk.auth(
-  //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImU0ZmQxYzM4YjhlMzQ0YjZhZGJmMWVlZWYzOGEwMWI5IiwiY3JlYXRlZF9hdCI6IjIwMjMtMTEtMjhUMTQ6Mzg6NDQuNzY2MDM4In0.EFO4ErZN0Uox8MBjXtbOW-6HM1nlLSnGFtb2e_yMTGE",
-  // );
   // const hooks = await sdk.getWebhook({ url_name: hook_name }).catch((ex) => {
   //   console.log("errorerror", ex, ex);
   // });
