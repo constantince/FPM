@@ -1,6 +1,26 @@
 const Success = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+    <div className="flex min-h-screen items-center flex-col justify-center bg-gray-100">
+      <a
+        className="text-black rounded-l-md my-10 py-2 hover:text-blue px-3"
+        href="/"
+      >
+        <div className="flex flex-row align-middle">
+          <svg
+            className="w-5 mr-2"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <p className="ml-2">Back Home</p>
+        </div>
+      </a>
       <div className="rounded-lg bg-gray-50 px-16 py-14">
         <div className="flex justify-center">
           <div className="rounded-full bg-green-200 p-6">
@@ -23,14 +43,9 @@ const Success = () => {
           </div>
         </div>
         <h3 className="my-4 text-center text-3xl font-semibold text-gray-700">
-          Congratuation!!!
+          Congratuation!
         </h3>
-        <p className="w-[230px] text-center font-normal text-gray-600">
-          File uploaded Success
-        </p>
-        <a href="/transcription" className="mx-auto mt-10 block rounded-xl border-4 border-transparent bg-orange-400 px-6 py-3 text-center text-base font-medium text-orange-100 outline-8 hover:outline hover:duration-300 hover:cursor-pointer">
-          Check it out
-        </a>
+        <p>Process has been done. </p>
       </div>
     </div>
   );

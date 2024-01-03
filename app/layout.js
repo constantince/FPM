@@ -33,7 +33,7 @@ export default async function RootLayout({ children, modal }) {
   // }
 
   const sessionCookie = (cookies().get("session") || {}).value;
-  console.log("app/layout.js line 36: session:::::", sessionCookie);
+  // console.log("app/layout.js line 36: session:::::", sessionCookie);
   const user = await getUserAuth(sessionCookie || "empty");
 
   console.log("user session verify...", user);
@@ -42,10 +42,7 @@ export default async function RootLayout({ children, modal }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <UserProvider value={v}>
-          {children}
-          <Footer />
-        </UserProvider>
+        <UserProvider value={v}>{children}</UserProvider>
         {modal}
       </body>
     </html>

@@ -30,6 +30,9 @@ import { NextResponse } from "next/server";
 //     return result;
 //   }
 // };
+// pages collection that your want show to all customer currently.
+const pages_discard = ["/pricing"];
+
 export function middleware(request) {
   // console.log("request", request.nextUrl.pathname);
   // const allCookies = request.cookies.getAll(); // also  include cookie with http only property.
@@ -49,6 +52,11 @@ export function middleware(request) {
   //     }
   //   }
   // }
+
+  // discard temporaty the page you do not want useContext
+  if (pages_discard.indexOf(request.nextUrl.pathname) > -1) {
+    return NextResponse.redirect(new URL("/not-found", request.url));
+  }
 
   //no auth user can not view these router
   if (/^\/(profile|transcription|feedback)/g.test(request.nextUrl.pathname)) {
