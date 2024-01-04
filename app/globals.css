@@ -22,5 +22,7 @@ html {
 
 body {
   height: 100%;
+  overflow: hidden;
+  overflow-y: scroll;
   color: rgb(var(--foreground-rgb));
 }

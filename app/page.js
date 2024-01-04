@@ -13,7 +13,7 @@ export default async function Landing() {
   if (role === "premium") auth = "paid user";
   return (
     <p className="my-40 mx-auto text-center">
-      Your status in the web app is: {auth}
+      Your status in the web app is: <a href="/profile">{auth}</a>
     </p>
   );
 }

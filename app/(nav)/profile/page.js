@@ -7,6 +7,7 @@ import getUserAuth from "../../../utils/server_user_auth";
 import { redirect } from "next/navigation";
 import stripe_sdk from "stripe";
 import dateFormat from "dateformat";
+import ClientBtn from "./comps/ClientBtn";
 
 const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 
@@ -18,7 +19,15 @@ const Profile = async ({}) => {
   if (!user) {
     redirect("/expired");
   }
-  const { displayName, email, photoURL, role, stripeId } = user;
+  const { displayName, email, photoURL, role, stripeId, id } = user;
+
+  let products = [];
+  const list = await db.collection("unproducts").where("uid", "==", id).get();
+ 
+  if( !list.empty) {
+    products = list.docs
+  }
+  console.log("list docs",products[0].data().createTime._seconds);
   // console.log("result profile:", user);
   console.log("profile page.js line 28:", stripeId);
   return (
@@ -55,16 +64,20 @@ const Profile = async ({}) => {
               ) : null}
             </div>
             <div className="flex justify-between items-center my-5 px-6">
-              <a
-                href="/transcription"
-                className="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-150 ease-in font-medium text-sm text-center w-full py-3"
-              >
-                My Tasks
+             {products.map(item => (
+              <a href={`/create/${item.id}`} className="hover:underline hover:text-blue-500">
+                {item.data().name} {" created at: "} {dateFormat(new Date(item.data().createTime._seconds * 1000), "yyyy-mm-dd hh:MM:ss")}
               </a>
+             ))}
             </div>
             <div className="w-full">
               <a href="/api/session_logout"><h3 className="font-medium text-gray-900 text-left px-6">
                 Log out
+              </h3></a>
+
+
+              <a href="/create"><h3 className="font-medium text-gray-900 text-left px-6">
+                create unproducts
               </h3></a>
             </div>
           </div>

@@ -34,9 +34,9 @@ export default async function RootLayout({ children, modal }) {
 
   const sessionCookie = (cookies().get("session") || {}).value;
   // console.log("app/layout.js line 36: session:::::", sessionCookie);
-  const user = await getUserAuth(sessionCookie || "empty");
+  const user = await getUserAuth();
 
-  console.log("user session verify...", user);
+  // console.log("user session verify...", user);
   const v = user ? { uid: user.id, email: user.email, role: user.role } : null;
 
   return (
