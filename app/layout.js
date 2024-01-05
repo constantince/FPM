@@ -41,7 +41,7 @@ export default async function RootLayout({ children, modal }) {
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} bg-slate-50`}>
         <UserProvider value={v}>{children}</UserProvider>
         {modal}
       </body>
