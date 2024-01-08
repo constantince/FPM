@@ -6,25 +6,24 @@ import Image from "next/image";
 
 const db = admin.firestore();
 export default async function Landing() {
-  const user = await getUserAuth();
-  const { displayName, email, photoURL, role, stripeId, id } = user || {};
+  const staticDoc = await db.collection("static").doc("landing-info").get();
+  const staticData = staticDoc.data();
+  console.log("this is static data", staticData);
   return (
-    <section className="pb-12 bg-gray-800 text-white">
+    <section className="pb-12 bg-gray-800 text-white h-full">
       <div className="items-center pt-12 px-8 mx-auto max-w-7xl lg:px-16 md:px-12">
-        <div className="justify-center w-full text-center lg:p-10 max-auto">
+        <div className="justify-center w-full text-left lg:p-10 max-auto">
           <div className="justify-center w-full mx-auto">
-            <p className="sm:mt-8 mt-3 sm:px-44 text-4xl sm:text-6xl font-semibold tracking-tighter">
+            <p className="sm:mt-8 mt-3 sm:px-44 text-4xl sm:text-6xl font-semibold tracking-tighter text-center">
               <span className="underline leading-8 underline-offset-8	decoration-8 decoration-[#8B5CF6]">
                 Failed{" "}
               </span>
               Products Matter
             </p>
             <p className="sm:mt-8 mt-2.5  sm:px-72  sm:leading-loose text-lg font-normal tracking-tighter">
-              Every solo entrepreneur, when they reach their ultimate success,
-              must have failed seven times on average. Do not waste your seeds;
-              sell or list them for other purposes then see what happens. I am
-              building a website that list all your failed product.
+              {staticData.content}
             </p>
+            {/* <p className="sm:mt-8 mt-2.5  sm:px-72  sm:leading-loose text-lg font-normal tracking-tighter"></p> */}
           </div>
         </div>
       </div>
@@ -80,7 +79,7 @@ export default async function Landing() {
                 <div className="overflow-hidden bg-blue-50 h-1.5 rounded-full w-full">
                   <span
                     className="h-full bg-blue-500 w-full block rounded-full"
-                    style={{ width: "70%" }}
+                    style={{ width: `${staticData.progress}%` }}
                   />
                 </div>
               </div>
@@ -100,7 +99,7 @@ export default async function Landing() {
           action="api/preemail"
         >
           <input
-            required="true"
+            required={true}
             pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
             title="email format not correct"
             name="email"
@@ -112,7 +111,8 @@ export default async function Landing() {
           </button>
         </form>
         <p className="mt-4 text-xs text-gray-500 mb-10 text-center w-full">
-          When our product success Lanuch, You'll get email notify first.
+          When our product successfully launches, you'll be the first to receive
+          an email notification.
         </p>
       </div>
     </section>
