@@ -70,7 +70,7 @@ export default async function Landing() {
               <div className="space-y-3 flex-1">
                 <div className="flex items-center">
                   <h4 className="font-medium text-sm mr-auto text-white flex items-center">
-                    Building the last component for listing...
+                    {staticData.builddesc}
                   </h4>
                   <span className="px-2 py-1 rounded-lg bg-red-50 text-red-500 text-xs">
                     70%
