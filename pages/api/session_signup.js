@@ -11,8 +11,8 @@ export default async function SessionSignUp(req, res) {
     res.status(401).send("UNAUTHORIZED REQUEST!");
     return;
   }
-  // Set session expiration to 5 days.
-  const expiresIn = 60 * 60 * 24 * 5;
+  // Set session expiration to 30 days.
+  const expiresIn = 60 * 60 * 24 * 30;
   // Create the session cookie. This will also verify the ID token in the process.
   // The session cookie will have the same claims as the ID token.
   // To only allow session cookie setting on recent sign-in, auth_time in ID token

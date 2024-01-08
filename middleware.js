@@ -42,15 +42,10 @@ export function middleware(request) {
   // console.log("vip", vip);
   // console.log("logged", logged);
   const nextPage = NextResponse.next();
-  // // vip customer do not need to view this page
-  // if (request.nextUrl.pathname.startsWith("/pricing")) {
-  //   if (logged) {
-  //     if (!vip) {
-  //       return nextPage;
-  //     } else {
-  //       return NextResponse.redirect(new URL("/profile", request.url));
-  //     }
-  //   }
+
+  // only landing page mode for preview test
+  // if (request.nextUrl.pathname !== "/") {
+  //   return NextResponse.redirect(new URL("/", request.url));
   // }
 
   // discard temporaty the page you do not want useContext
