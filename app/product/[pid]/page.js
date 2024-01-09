@@ -91,7 +91,10 @@ export default async function Details({ params }) {
             <h1 className="text-sm">
               {Array.isArray(assets) ? (
                 assets.map((as) => (
-                  <div className="center relative inline-block select-none whitespace-nowrap rounded-lg mr-2 bg-blue-500 py-1 px-2 align-baseline font-sans text-xs leading-none text-white">
+                  <div
+                    key={as}
+                    className="center relative inline-block select-none whitespace-nowrap rounded-lg mr-2 bg-blue-500 py-1 px-2 align-baseline font-sans text-xs leading-none text-white"
+                  >
                     <div className="mt-px">{as}</div>
                   </div>
                 ))
@@ -119,7 +122,7 @@ export default async function Details({ params }) {
         </div>
       </div>
       <p className="max-w-md m-auto mt-2 flex items-center text-xs text-gray-500 hover:text-gray-700">
-        By clicking the blow button, Contact infomation about this project's
+        By clicking the blow button, Contact infomation about this {"project's"}
         author will appear your profolio page.
       </p>
       <footer className="flex max-w-md m-auto justify-end w-full">

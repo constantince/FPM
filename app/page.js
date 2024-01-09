@@ -8,9 +8,9 @@ const db = admin.firestore();
 export default async function Landing() {
   const staticDoc = await db.collection("static").doc("landing-info").get();
   const staticData = staticDoc.data();
-  console.log("this is static data", staticData);
+  // console.log("this is static data", staticData);
   return (
-    <section className="pb-12 bg-gray-800 text-white h-full">
+    <section className="pb-12 bg-gray-800 text-white">
       <div className="items-center pt-12 px-8 mx-auto max-w-7xl lg:px-16 md:px-12">
         <div className="justify-center w-full text-left lg:p-10 max-auto">
           <div className="justify-center w-full mx-auto">
@@ -28,12 +28,12 @@ export default async function Landing() {
         </div>
       </div>
       <h1 className="text-center sm:mt-8 mt-3 sm:px-44 text-4xl sm:text-4xl underline underline-offset-8 mb-5">
-        Screen Shot
+        The Screenshot
       </h1>
       {/* intro image */}
       <Image
         className="block m-auto mb-10"
-        src="https://themesberg.s3.us-east-2.amazonaws.com/public/products/landwind/landwind-thumbnail.jpg"
+        src={staticData.screenshot2}
         width={600}
         height={300}
         alt="Picture of the author"
@@ -73,7 +73,7 @@ export default async function Landing() {
                     {staticData.builddesc}
                   </h4>
                   <span className="px-2 py-1 rounded-lg bg-red-50 text-red-500 text-xs">
-                    70%
+                    {staticData.progress}%
                   </span>
                 </div>
                 <div className="overflow-hidden bg-blue-50 h-1.5 rounded-full w-full">
@@ -111,8 +111,8 @@ export default async function Landing() {
           </button>
         </form>
         <p className="mt-4 text-xs text-gray-500 mb-10 text-center w-full">
-          When our product successfully launches, you'll be the first to receive
-          an email notification.
+          When our product successfully launches, {"you'll"} be the first to
+          receive an email notification.
         </p>
       </div>
     </section>

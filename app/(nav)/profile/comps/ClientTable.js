@@ -19,7 +19,7 @@ export default function ClientTable({products}) {
         </tr>
       </thead>
       <tbody className="text-sm divide-y divide-gray-100">
-      {products.map(item => (<tr>
+      {products.map(item => (<tr key={item.name}>
           <td className="p-2 whitespace-nowrap">
             <div className="flex items-center">
 
