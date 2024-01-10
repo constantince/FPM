@@ -31,6 +31,8 @@ export default async function SessionLogin(req, res) {
     await unproductCol.doc(req.body.pid).update(
       {
         ...req.body,
+        wants: 0,
+        status: "listing",
         updateTime: FieldValue.serverTimestamp(),
       },
       { merge: true },

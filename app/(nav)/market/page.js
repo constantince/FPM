@@ -1,12 +1,10 @@
-import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
-import getUserAuth from "/utils/server_user_auth";
 
 const db = admin.firestore();
 
 
 export default async function Market() {
-  const snapShot = await db.collection("unproducts").orderBy("createTime", "desc").limit(10).get();
+  const snapShot = await db.collection("unproducts").where("status", "==", "listing").limit(100).get();
     if( snapShot.empty ) return null;
     const list = snapShot.docs;
     return <div>

@@ -30,7 +30,7 @@ export default function ClientTable({products}) {
             <div className="text-left">{item.status || "active"}</div>
           </td>
           <td className="p-2 whitespace-nowrap">
-            <div className="text-left font-medium text-green-500">{item.want||0}</div>
+            <div className="text-left font-medium text-green-500">{item.wants||0}</div>
           </td>
           <td className="p-2 whitespace-nowrap">
             <div className="text-lg text-center"></div>

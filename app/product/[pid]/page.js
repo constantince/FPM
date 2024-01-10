@@ -4,9 +4,44 @@ import getUserAuth from "/utils/server_user_auth";
 import dateFormat from "dateformat";
 
 const db = admin.firestore();
+
+function Alink({ user = {}, pid }) {
+  if (!user.id) {
+    return (
+      <a
+        href="/signin"
+        className="w-auto rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold uppercase text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+        data-ripple-light="true"
+      >
+        I Want It
+      </a>
+    );
+  }
+
+  if (user.order.includes(pid)) {
+    return (
+      <button
+        className="w-auto rounded-sm middle px-3 py-1 none bg-gray-100 font-sans text-xs font-bold uppercase text-gray-500 shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+        data-ripple-light="true"
+      >
+        done
+      </button>
+    );
+  }
+
+  return (
+    <a
+      href={`/api/want?pid=${pid}`}
+      className="w-auto rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold uppercase text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+      data-ripple-light="true"
+    >
+      I Want It
+    </a>
+  );
+}
+
 export default async function Details({ params }) {
   const user = await getUserAuth();
-  const { id } = user || {};
   const snapShot = await db.collection("unproducts").doc(params.pid).get();
   if (!snapShot.exists) return "empty";
   const {
@@ -22,7 +57,7 @@ export default async function Details({ params }) {
     price,
   } = snapShot.data();
 
-  console.log(assets);
+  // console.log(order);
   return (
     <div className="flex flex-col gap-2 mt-5 pb-20">
       <a
@@ -126,23 +161,7 @@ export default async function Details({ params }) {
         author will appear your profolio page.
       </p>
       <footer className="flex max-w-md m-auto justify-end w-full">
-        {id ? (
-          <a
-            href=""
-            className="w-auto rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold uppercase text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-            data-ripple-light="true"
-          >
-            I Want It
-          </a>
-        ) : (
-          <a
-            href="/signin"
-            className="w-auto rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold uppercase text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-            data-ripple-light="true"
-          >
-            I Want It
-          </a>
-        )}
+        <Alink user={user} pid={snapShot.id} />
       </footer>
     </div>
   );

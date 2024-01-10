@@ -1,5 +1,5 @@
 import { getApp } from "firebase-admin/app";
-import { Timestamp, FieldValue } from "firebase-admin/firestore";
+import { Timestamp, FieldValue, FieldPath } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
 import BillingBtn from "../../../comps/pay_form";
 import ClientTable from "./comps/ClientTable";
@@ -20,11 +20,12 @@ const Profile = async ({}) => {
   if (!user) {
     redirect("/expired");
   }
-  const { displayName, email, photoURL, role, stripeId, id } = user;
+  const { displayName, email, photoURL, role, stripeId, id, order } = user;
 
   let products = [];
   const list = await db.collection("unproducts").where("uid", "==", id).get();
- 
+  const wantList = await db.collection("unproducts").where(FieldPath.documentId(), 'in', order).get();
+  // console.log("profile line:27",wantList.docs);
   if( !list.empty) {
     products = list.docs.map(item => {
       return {
@@ -73,16 +74,31 @@ const Profile = async ({}) => {
                 </BillingBtn>
               ) : null*/}
             </div>
+
+            <h1 className="text-lg font-bold px-5 bg-gray-300 text-white mt-10 mb-2">My Failed Products</h1>
             <div className="flex justify-between items-center my-5 px-6">
 
 
-      <ClientTable products={products} />
+            <ClientTable products={products} />
+            
              {/*products.map(item => (
               <a href={`/create/${item.id}`} className="hover:underline hover:text-blue-500">
                 {item.data().name} {" created at: "} {dateFormat(new Date(item.data().createTime._seconds * 1000), "yyyy-mm-dd hh:MM:ss")}
               </a>
              ))*/}
             </div>
+
+
+            {/* hunting list */}
+            <h1 className="text-lg font-bold px-5 bg-gray-300 text-white mt-10 mb-2">Contacts</h1>
+            <ul className="mb-10">
+              {wantList.docs.map(item => (
+                <li key={item.id} className="mb-2 flex text-xs text-slate-500 px-5 content-center"><span className="grow text-base font-bold mr-10">{item.data().name}</span>
+                  <span className="flex items-center">{item.data().contact}</span></li>
+               
+              ))}
+              </ul>
+
             <div className="w-full flex justify-end px-5 pb-5">
             <a href="/create" className="mr-5 w-auto rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold uppercase text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
                 create
