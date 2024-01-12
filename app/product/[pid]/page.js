@@ -55,6 +55,7 @@ export default async function Details({ params }) {
     spentTime,
     desc,
     price,
+    wants,
   } = snapShot.data();
 
   // console.log(order);
@@ -113,11 +114,6 @@ export default async function Details({ params }) {
             <h4 className="text-base font-semibold">Days spent:</h4>
             <h1 className="text-sm ">{spentTime} days</h1>
           </div>
-
-          <div className="flex flex-col">
-            <h4 className="text-base font-semibold">End Pharse:</h4>
-            <h1 className="text-sm ">Building</h1>
-          </div>
         </div>
 
         <div className="flex flex-wrap p-2 w-full gap-4  border-b">
@@ -156,6 +152,10 @@ export default async function Details({ params }) {
           </div>
         </div>
       </div>
+      <p className="max-w-md m-auto mt-2 flex items-center text-xs text-gray-500 hover:text-gray-700">
+        <span className="text-blue-800 mr-1 font-semibold">{wants}</span> people
+        want it.
+      </p>
       <p className="max-w-md m-auto mt-2 flex items-center text-xs text-gray-500 hover:text-gray-700">
         By clicking the blow button, Contact infomation about this {"project's"}
         author will appear your profolio page.

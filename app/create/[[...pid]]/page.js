@@ -103,14 +103,14 @@ export default async function Index({ params }) {
           htmlFor="spentTime"
           className="mb-3 block text-base font-medium text-[#07074D]"
         >
-          How much time spent to it:
+          How much days spent to it:
         </label>
         <input
           type="spentTime"
           name="spentTime"
           id="spentTime"
           defaultValue={formDefaultValue.spentTime}
-          placeholder="example@domain.com"
+          placeholder="30"
           className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
         />
       </div>
@@ -142,6 +142,7 @@ export default async function Index({ params }) {
           type="number"
           name="price"
           id="price"
+          placeholder="200.01$"
           defaultValue={formDefaultValue.price}
           className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
         />
@@ -169,7 +170,7 @@ export default async function Index({ params }) {
               />
               <label
                 htmlFor="checkbox-1"
-                className="text-sm ml-3 font-medium text-gray-900"
+                className="text-sm ml-3 mr-3 font-medium text-gray-900"
               >
                 code
               </label>
@@ -186,7 +187,7 @@ export default async function Index({ params }) {
               />
               <label
                 htmlFor="checkbox-2"
-                className="text-sm ml-3 font-medium text-gray-900"
+                className="text-sm ml-3 mr-3 font-medium text-gray-900"
               >
                 domain
               </label>
@@ -203,7 +204,7 @@ export default async function Index({ params }) {
               />
               <label
                 htmlFor="checkbox-3"
-                className="text-sm ml-3 font-medium text-gray-900"
+                className="text-sm ml-3 mr-3 font-medium text-gray-900"
               >
                 data
               </label>
@@ -225,7 +226,7 @@ export default async function Index({ params }) {
               <div className="text-sm ml-3">
                 <label
                   htmlFor="shipping-2"
-                  className="font-medium text-gray-900"
+                  className="font-medium text-gray-900 mr-3"
                 >
                   Social accounts
                 </label>

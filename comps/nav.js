@@ -5,10 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
+  { name: "Home", href: "/" },
+  { name: "Market", href: "/market" },
+  { name: "Contact", href: "/contact" },
 ];
 
 // console.log("what are your type...");
@@ -103,33 +102,19 @@ export default function Nav() {
             id="navbar-sticky"
           >
             <ul className="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 md:mt-0 md:flex-row md:space-x-8 md:border-0 md:text-sm md:font-medium">
-              <li>
-                <a
-                  href="/"
-                  className="block rounded bg-blue-700 py-2 pl-3 pr-4 text-white md:bg-transparent md:p-0 md:text-blue-700"
-                  aria-current={pathname === "/" ? "page" : undefined}
-                >
-                  Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/market"
-                  className="block rounded py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700"
-                  aria-current={pathname === "/market" ? "page" : undefined}
-                >
-                  Product Market
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/contact"
-                  className="block rounded py-2 pl-3 pr-4 text-gray-700 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700"
-                  aria-current={pathname === "/contact" ? "page" : undefined}
-                >
-                  Contact
-                </a>
-              </li>
+              {navigation.map((item) => (
+                <li>
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className={`block rounded py-2 pl-3 pr-4  md:bg-transparent md:p-0 text-${
+                      item.href == pathname ? "blue" : "gray"
+                    }-700`}
+                  >
+                    {item.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
