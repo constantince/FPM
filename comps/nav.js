@@ -103,9 +103,8 @@ export default function Nav() {
           >
             <ul className="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 md:mt-0 md:flex-row md:space-x-8 md:border-0 md:text-sm md:font-medium">
               {navigation.map((item) => (
-                <li>
+                <li key={item.href}>
                   <a
-                    key={item.href}
                     href={item.href}
                     className={`block rounded py-2 pl-3 pr-4  md:bg-transparent md:p-0 text-${
                       item.href == pathname ? "blue" : "gray"

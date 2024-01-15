@@ -24,7 +24,11 @@ const Profile = async ({}) => {
 
   let products = [];
   const list = await db.collection("unproducts").where("uid", "==", id).get();
-  const wantList = await db.collection("unproducts").where(FieldPath.documentId(), 'in', order).get();
+  let wantList = {docs: []};
+  if(Array.isArray(order)) {
+    wantList = await db.collection("unproducts").where(FieldPath.documentId(), 'in', order).get();
+  }
+  
   // console.log("profile line:27",wantList.docs);
   if( !list.empty) {
     products = list.docs.map(item => {
@@ -32,7 +36,7 @@ const Profile = async ({}) => {
         id: item.id,
         name: item.data().name,
         status: item.data().status,
-        want: item.data().want,
+        wants: item.data().wants,
         createTime: item.data().createTime._seconds
       }
       
@@ -79,7 +83,7 @@ const Profile = async ({}) => {
             <div className="flex justify-between items-center my-5 px-6">
 
 
-            <ClientTable products={products} />
+            <ClientTable products={products} uid={id} />
             
              {/*products.map(item => (
               <a href={`/create/${item.id}`} className="hover:underline hover:text-blue-500">
@@ -100,11 +104,11 @@ const Profile = async ({}) => {
               </ul>
 
             <div className="w-full flex justify-end px-5 pb-5">
-            <a href="/create" className="mr-5 w-auto rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold uppercase text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
-                create
+            <a href="/create" className="mr-5 w-auto rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
+                {decodeURIComponent('%2B')} Create
               </a>
-              <a href="/api/session_logout" className="font-sm text-slate-300 underline-offset-4">
-                Log out
+              <a href="/api/session_logout" className="font-xs text-slate-300 underline-offset-4">
+                Log out  {decodeURIComponent('-%3E')}
               </a>
 
 

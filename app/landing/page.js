@@ -13,11 +13,10 @@ export default async function Landing() {
         </header>
         <section className="flex flex-wrap md:flex-wrap items-center justify-center">
           <div className="left pl-20 grow">
-            <p className="sologn text-6xl font-bold">Faild Products Matter</p>
+            <p className="sologn text-6xl font-bold">Failed Products Matter</p>
             <p className="descriptions text-xl mt-5 mb-5 max-w-screen-sm">
-              list your failed product for sellinglist your failed product for
-              sellinglist your failed product for sellinglist your failed
-              product for sellinglist your failed product for selling
+              List your unsuccessful products for sale, and give them a chance
+              for a new life or to be repurposed by someone else.
             </p>
             <div className="flex justify-start items-center">
               <a
@@ -48,8 +47,11 @@ export default async function Landing() {
               </a>
             </div>
           </div>
-          <div className="right min:w-2/5 text-center">
-            {/* <img src="https://quiety-next.themetags.com/hero-1.png" /> */}
+          <div className="right text-center">
+            <img
+              className="w-3/4 block"
+              src="https://quiety-next.themetags.com/hero-1.png"
+            />
           </div>
         </section>
       </div>
@@ -58,10 +60,10 @@ export default async function Landing() {
       <div className="bg-gray-100 w-full h-full text-gray-500">
         <div className="h-28"></div>
         <h1 className="text-4xl text-center font-bold ">What Can You Sell?</h1>
-        <p className="text-sm text-left w-2/5 mx-auto mt-2">
+        {/* <p className="text-sm text-left w-2/5 mx-auto mt-2">
           list your failed product for sellinglist your failed product for
           sellinglist your failed product for sellinglist your faile
-        </p>
+        </p> */}
         <section className="mt-40">
           <ul className="flex px-20">
             <li className="inline-flex grow flex-col items-center justify-center mx-10">
@@ -80,9 +82,9 @@ export default async function Landing() {
                 </svg>
               </div>
               <div className="text-center text-lg font-bold">Code</div>
-              <p className="text-left text-sm">
-                app, website, or other type of code you can sell it all.
-              </p>
+              {/* <p className="text-left text-sm">
+                apps, websites, or other type of code you can sell it all.
+              </p> */}
             </li>
             <li className="inline-flex grow flex-col items-center justify-center mx-10">
               <div className="text-lg font-bold feature-icon bg-red-500 rounded-md justify-center rounded-custom text-black w-14 h-14 flex items-center">
@@ -103,9 +105,9 @@ export default async function Landing() {
                 </svg>
               </div>
               <div className="text-center text-lg font-bold">Assets</div>
-              <p className="text-left text-sm">
+              {/* <p className="text-left text-sm">
                 app, website, or other type of code you can sell it all.
-              </p>
+              </p> */}
             </li>
             <li className="inline-flex grow flex-col items-center justify-center mx-10">
               <div className="text-lg font-bold feature-icon bg-blue-700 rounded-md justify-center rounded-custom text-black w-14 h-14 flex items-center">
@@ -135,9 +137,9 @@ export default async function Landing() {
                 </svg>
               </div>
               <div className="text-center text-lg font-bold">Domain</div>
-              <p className="text-left text-sm">
-                app, website, or other type of code you can sell it all.
-              </p>
+              {/* <p className="text-left text-sm">
+                a failure site domain can be list and sell.
+              </p> */}
             </li>
             <li className="inline-flex grow flex-col items-center justify-center mx-10">
               <div className="text-lg font-bold feature-icon bg-gray-700 rounded-md justify-center rounded-custom text-black w-14 h-14 flex items-center">
@@ -155,9 +157,10 @@ export default async function Landing() {
                 </svg>
               </div>
               <div className="text-center text-lg font-bold">Others</div>
-              <p className="text-left text-sm">
-                app, website, or other type of code you can sell it all.
-              </p>
+              {/* <p className="text-left text-sm">
+                social medal persona or media or the relvent asset could be
+                sell.
+              </p> */}
             </li>
           </ul>
         </section>
@@ -170,42 +173,40 @@ export default async function Landing() {
         <p className="text-black text-xl text-center mb-10">
           Frequently Asked Questions
         </p>
-        <p className="w-2/4 mx-auto my-5 mb-10">
+        {/* <p className="w-2/4 mx-auto my-5 mb-10">
           Conveniently mesh cooperative services via magnetic outsourcing.
           Dynamically grow value whereas accurate e-commerce vectors.
-        </p>
+        </p> */}
         <ul className="w-2/4 mx-auto my-5">
           <li className="my-5">
             <p className="text-xl font-bold">
-              <b className="text-blue-500 text-2xl">1</b>. How does back pricing
-              work?
+              <b className="text-blue-500 text-2xl">1</b>. What type of product
+              can I sell
             </p>
-            <p className="text-sm">
-              Progressively e-enable collaborative inexpensive supply chains.
-              Efficiently maintain economically methods of empowerment for
-              synergistic sound scenarios.
-            </p>
-          </li>
-          <li className="my-5">
-            <p className="text-xl font-bold">
-              <b className="text-blue-500 text-2xl">2</b>. How does back pricing
-              work?
-            </p>
-            <p className="text-sm">
-              Progressively e-enable collaborative inexpensive supply chains.
-              Efficiently maintain economically methods of empowerment for
-              synergistic sound scenarios.
+            <p className="text-sm py-5">
+              All types of products can be listed and sold here, including
+              mobile apps, websites, and other types of digital products.
             </p>
           </li>
           <li className="my-5">
             <p className="text-xl font-bold">
-              <b className="text-blue-500 text-2xl">3</b>. How does back pricing
-              work?
+              <b className="text-blue-500 text-2xl">2</b>. Can I sell a idea?
             </p>
-            <p className="text-sm">
-              Progressively e-enable collaborative inexpensive supply chains.
-              Efficiently maintain economically methods of empowerment for
-              synergistic sound scenarios.
+            <p className="text-sm py-5">
+              Please note that only products that have been launched can be
+              listed here. This means that you cannot sell an idea; you must
+              have already built something!
+            </p>
+          </li>
+          <li className="my-5">
+            <p className="text-xl font-bold">
+              <b className="text-blue-500 text-2xl">3</b>.How to I pay to the
+              author of the owner.
+            </p>
+            <p className="text-sm py-5">
+              To connect with the seller, go to the detail page and click the "I
+              want" button. Then, the seller's contact information will appear
+              on your profile page. You can contact them at any time.
             </p>
           </li>
         </ul>

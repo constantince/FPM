@@ -40,6 +40,7 @@ export default async function SessionLogin(req, res) {
   } else {
     await unproductCol.add({
       ...req.body,
+      status: "listing",
       createTime: FieldValue.serverTimestamp(),
     });
   }

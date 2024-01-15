@@ -42,5 +42,5 @@ export default async function Want(req, res) {
       wants: FieldValue.increment(1),
     });
 
-  res.redirect(303, `${req.headers.origin}/profile`);
+  res.status(200).json({ status: "success", code: 0, data: null });
 }

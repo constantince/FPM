@@ -47,6 +47,7 @@ const setSessionToken = async (userCredential, redirectUrl) => {
     photoURL: user.photoURL,
     emailVerified: user.emailVerified,
     provider: userInfo.providerId,
+    order: [],
     createdTime: serverTimestamp(),
   };
 

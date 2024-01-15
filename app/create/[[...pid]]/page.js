@@ -27,7 +27,7 @@ export default async function Index({ params }) {
           type="name"
           name="name"
           id="name"
-          require="true"
+          required={true}
           defaultValue={formDefaultValue.name}
           placeholder="ChatGpt"
           className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -58,6 +58,7 @@ export default async function Index({ params }) {
           rows={4}
           name="desc"
           id="desc"
+          required={true}
           placeholder="Type your message"
           className="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
           defaultValue={formDefaultValue.desc}
@@ -75,7 +76,10 @@ export default async function Index({ params }) {
           type="link"
           name="link"
           id="link"
-          placeholder="bac.com"
+          required={true}
+          pattern="^https?:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(\/\S*)?$"
+          title="example: https://amz.com"
+          placeholder="https://google.com"
           defaultValue={formDefaultValue.link}
           className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
         />
@@ -92,8 +96,9 @@ export default async function Index({ params }) {
           type="date"
           name="date"
           id="date"
+          required={true}
           defaultValue={formDefaultValue.date}
-          placeholder="example@domain.com"
+          placeholder="2021/02/01"
           className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
         />
       </div>
@@ -106,8 +111,9 @@ export default async function Index({ params }) {
           How much days spent to it:
         </label>
         <input
-          type="spentTime"
+          type="number"
           name="spentTime"
+          required={true}
           id="spentTime"
           defaultValue={formDefaultValue.spentTime}
           placeholder="30"
@@ -126,6 +132,7 @@ export default async function Index({ params }) {
           rows={4}
           name="reason"
           id="reason"
+          required={true}
           placeholder="Type your message"
           className="w-full resize-none rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
           defaultValue={formDefaultValue.reason}
@@ -142,6 +149,7 @@ export default async function Index({ params }) {
           type="number"
           name="price"
           id="price"
+          required={true}
           placeholder="200.01$"
           defaultValue={formDefaultValue.price}
           className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
@@ -172,7 +180,7 @@ export default async function Index({ params }) {
                 htmlFor="checkbox-1"
                 className="text-sm ml-3 mr-3 font-medium text-gray-900"
               >
-                code
+                Code
               </label>
             </div>
             <div className="flex items-start items-center mb-4">
@@ -189,7 +197,7 @@ export default async function Index({ params }) {
                 htmlFor="checkbox-2"
                 className="text-sm ml-3 mr-3 font-medium text-gray-900"
               >
-                domain
+                Domain
               </label>
             </div>
             <div className="flex items-start items-center mb-4">
@@ -206,7 +214,7 @@ export default async function Index({ params }) {
                 htmlFor="checkbox-3"
                 className="text-sm ml-3 mr-3 font-medium text-gray-900"
               >
-                data
+                Data
               </label>
             </div>
             <div className="flex items-start mb-4">
@@ -254,6 +262,8 @@ export default async function Index({ params }) {
           type="contact"
           name="contact"
           id="contact"
+          required={true}
+          pattern="[^\s@]+@[^\s@]+\.[^\s@]+"
           defaultValue={formDefaultValue.contact}
           placeholder="example@domain.com"
           className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"

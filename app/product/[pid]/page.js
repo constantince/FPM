@@ -2,43 +2,9 @@ import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import admin from "/firebase/admin";
 import getUserAuth from "/utils/server_user_auth";
 import dateFormat from "dateformat";
+import Alink from "../comp/Alink";
 
 const db = admin.firestore();
-
-function Alink({ user = {}, pid }) {
-  if (!user.id) {
-    return (
-      <a
-        href="/signin"
-        className="w-auto rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold uppercase text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-        data-ripple-light="true"
-      >
-        I Want It
-      </a>
-    );
-  }
-
-  if (user.order.includes(pid)) {
-    return (
-      <button
-        className="w-auto rounded-sm middle px-3 py-1 none bg-gray-100 font-sans text-xs font-bold uppercase text-gray-500 shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-        data-ripple-light="true"
-      >
-        done
-      </button>
-    );
-  }
-
-  return (
-    <a
-      href={`/api/want?pid=${pid}`}
-      className="w-auto rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold uppercase text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-      data-ripple-light="true"
-    >
-      I Want It
-    </a>
-  );
-}
 
 export default async function Details({ params }) {
   const user = await getUserAuth();
@@ -152,16 +118,24 @@ export default async function Details({ params }) {
           </div>
         </div>
       </div>
-      <p className="max-w-md m-auto mt-2 flex items-center text-xs text-gray-500 hover:text-gray-700">
-        <span className="text-blue-800 mr-1 font-semibold">{wants}</span> people
-        want it.
-      </p>
+      {wants > 0 && (
+        <p className="max-w-md m-auto mt-2 flex items-center text-xs text-gray-500 hover:text-gray-700">
+          <span className="text-blue-800 mr-1 font-semibold">{wants}</span>{" "}
+          people want it.
+        </p>
+      )}
       <p className="max-w-md m-auto mt-2 flex items-center text-xs text-gray-500 hover:text-gray-700">
         By clicking the blow button, Contact infomation about this {"project's"}
         author will appear your profolio page.
       </p>
       <footer className="flex max-w-md m-auto justify-end w-full">
-        <Alink user={user} pid={snapShot.id} />
+        <Alink
+          id={user.id}
+          order={user.order}
+          pid={snapShot.id}
+          uid={uid}
+          contact={contact}
+        />
       </footer>
     </div>
   );
