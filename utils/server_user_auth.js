@@ -3,13 +3,13 @@ import { getAuth } from "firebase-admin/auth";
 import { cookies } from "next/headers";
 
 export default async function serverAuth() {
-  let user;
+  let user = {};
   const sessionCookie = (cookies().get("session") || {}).value;
   if (sessionCookie) {
     // console.log("thhis is session cookie in nav", sessionCookie);
     const token = await getAuth()
       .verifySessionCookie(sessionCookie, true /** checkRevoked */)
-      .catch((ex) => null);
+      .catch((ex) => ({}));
     // console.log("server_user_auth.js line 10: this is token", token);
 
     if (token) {
@@ -31,4 +31,4 @@ export default async function serverAuth() {
     }
   }
   return user;
-};
+}

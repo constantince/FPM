@@ -204,9 +204,10 @@ export default async function Landing() {
               author of the owner.
             </p>
             <p className="text-sm py-5">
-              To connect with the seller, go to the detail page and click the "I
-              want" button. Then, the seller's contact information will appear
-              on your profile page. You can contact them at any time.
+              To connect with the seller, go to the detail page and click the{" "}
+              <span className="text-blue-400">I want</span> button. Then, the
+              seller{"'"}s contact information will appear on your profile page.
+              You can contact them at any time.
             </p>
           </li>
         </ul>

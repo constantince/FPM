@@ -49,7 +49,7 @@ export default function Alink({ id, order, pid, uid, contact }) {
         className="w-auto rounded-sm middle px-3 py-1 none bg-gray-500 font-sans text-xs font-bold text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
         data-ripple-light="true"
       >
-        It's your own product.
+        It{"'"}s your own product.
       </button>
     );
   }
