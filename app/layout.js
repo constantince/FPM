@@ -39,7 +39,7 @@ export default async function RootLayout({ children, modal }) {
   const user = await getUserAuth();
 
   // console.log("user session verify...", user);
-  const v = user ? { uid: user.id, email: user.email, role: user.role } : null;
+  const v = user ? { uid: user.uid, email: user.email, role: user.role } : null;
 
   return (
     <html lang="en">
