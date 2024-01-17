@@ -6,11 +6,11 @@ import ClientTable from "./comps/ClientTable";
 
 import getUserAuth from "../../../utils/server_user_auth";
 import { redirect } from "next/navigation";
-import stripe_sdk from "stripe";
-import dateFormat from "dateformat";
-import ClientBtn from "./comps/ClientBtn";
+// import stripe_sdk from "stripe";
+// import dateFormat from "dateformat";
+// import ClientBtn from "./comps/ClientBtn";
 
-const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
+// const stripe = stripe_sdk(process.env.STRIPE_SECRET_KEY);
 
 const db = admin.firestore();
 const Profile = async ({}) => {
@@ -20,12 +20,12 @@ const Profile = async ({}) => {
   if (!user) {
     redirect("/expired");
   }
-  const { displayName, email, photoURL, role, stripeId, id, order } = user;
-
+  const { displayName, email, photoURL, role, stripeId, uid, order } = user;
+console.log(user)
   let products = [];
-  const list = await db.collection("unproducts").where("uid", "==", id).get();
+  const list = await db.collection("unproducts").where("uid", "==", uid || null).get();
   let wantList = {docs: []};
-  if(Array.isArray(order)) {
+  if(Array.isArray(order) && order.length > 0) {
     wantList = await db.collection("unproducts").where(FieldPath.documentId(), 'in', order).get();
   }
   
@@ -83,7 +83,7 @@ const Profile = async ({}) => {
             <div className="flex justify-between items-center my-5 px-6">
 
 
-            <ClientTable products={products} uid={id} />
+            <ClientTable products={products} uid={uid} />
             
              {/*products.map(item => (
               <a href={`/create/${item.id}`} className="hover:underline hover:text-blue-500">

@@ -5,14 +5,14 @@ import cookie from "cookie";
 export default async function SessionSignUp(req, res) {
   const idToken = req.body.idToken.toString();
   const csrfToken = Number(req.body.csrfToken.toString());
-  const vip = req.body.vip.toString();
+  // const vip = req.body.vip.toString();
   // Guard against CSRF attacks.
   if (csrfToken * 3.15 !== 3150 || req.method !== "POST") {
     res.status(401).send("UNAUTHORIZED REQUEST!");
     return;
   }
   // Set session expiration to 30 days.
-  const expiresIn = 60 * 60 * 24 * 30;
+  const expiresIn = 60 * 60 * 24 * 13;
   // Create the session cookie. This will also verify the ID token in the process.
   // The session cookie will have the same claims as the ID token.
   // To only allow session cookie setting on recent sign-in, auth_time in ID token

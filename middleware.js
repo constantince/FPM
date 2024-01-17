@@ -37,7 +37,7 @@ export function middleware(request) {
   // console.log("request", request.nextUrl.pathname);
   // const allCookies = request.cookies.getAll(); // also  include cookie with http only property.
   // console.log("all cookies::", allCookies);
-  const vip = request.cookies.has("vip");
+  // const vip = request.cookies.has("vip");
   const logged = request.cookies.has("session");
   // console.log("vip", vip);
   // console.log("logged", logged);
