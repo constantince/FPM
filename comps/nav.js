@@ -14,7 +14,7 @@ const navigation = [
 
 export default function Nav() {
   const pathname = usePathname();
-  console.log(pathname);
+  // console.log(pathname);
   // let user = null;
   // if (sessionCookie) {
   //   console.log("thhis is session cookie in nav", sessionCookie);
@@ -36,7 +36,7 @@ export default function Nav() {
   const user = useContext(UserContext);
   // console.log("user in nav", user);
   const { uid, role, email, photoURL } = user || {};
-  console.log("uid in nav:::", user);
+  // console.log("uid in nav:::", user);
   return (
     <>
       <nav className="fixed top-0 left-0 z-20 w-full border-gray-200 py-2.5 px-6 sm:px-4">

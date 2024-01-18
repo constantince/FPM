@@ -55,7 +55,9 @@ export default async function Details({ params }) {
           <div className="flex flex-col">
             <h4 className="text-base font-semibold">Project Link:</h4>
             <h2 className="text-sm font-mono text-blue-600">
-              <a href={link}>{link}</a>
+              <a target="_blank" href={link}>
+                {link}
+              </a>
             </h2>
           </div>
         </header>
