@@ -130,7 +130,7 @@ export default async function Details({ params }) {
       </p>
       <footer className="flex max-w-md m-auto justify-end w-full">
         <Alink
-          id={user.uid}
+          id={user.id}
           order={user.order}
           pid={snapShot.id}
           uid={uid}

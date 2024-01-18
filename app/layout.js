@@ -34,12 +34,12 @@ export default async function RootLayout({ children, modal }) {
   //   }
   // }
 
-  const sessionCookie = (cookies().get("session") || {}).value;
+  // const sessionCookie = (cookies().get("session") || {}).value;
   // console.log("app/layout.js line 36: session:::::", sessionCookie);
   const user = await getUserAuth();
 
   // console.log("user session verify...", user);
-  const v = user ? { uid: user.uid, email: user.email, role: user.role } : null;
+  const v = user ? { uid: user.id, email: user.email, role: user.role } : null;
 
   return (
     <html lang="en">

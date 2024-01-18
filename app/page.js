@@ -1,3 +1,10 @@
+import admin from "/firebase/admin";
+import Image from "next/image";
+
+const db = admin.firestore();
+const staticDoc = await db.collection("static").doc("landing-info").get();
+const staticData = staticDoc.data();
+
 export default async function Landing() {
   return (
     <>
@@ -48,10 +55,7 @@ export default async function Landing() {
             </div>
           </div>
           <div className="right text-center">
-            <img
-              className="w-3/4 block"
-              src="https://quiety-next.themetags.com/hero-1.png"
-            />
+            <img alt="" className="w-3/4 block" src={staticData.hero} />
           </div>
         </section>
       </div>

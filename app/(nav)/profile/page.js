@@ -20,10 +20,10 @@ const Profile = async ({}) => {
   if (!user) {
     redirect("/expired");
   }
-  const { displayName, email, photoURL, role, stripeId, uid, order } = user;
+  const { displayName, email, photoURL, role, stripeId, id, order } = user;
 console.log(user)
   let products = [];
-  const list = await db.collection("unproducts").where("uid", "==", uid || null).get();
+  const list = await db.collection("unproducts").where("uid", "==", id || null).get();
   let wantList = {docs: []};
   if(Array.isArray(order) && order.length > 0) {
     wantList = await db.collection("unproducts").where(FieldPath.documentId(), 'in', order).get();
@@ -83,7 +83,7 @@ console.log(user)
             <div className="flex justify-between items-center my-5 px-6">
 
 
-            <ClientTable products={products} uid={uid} />
+            <ClientTable products={products} uid={id} />
             
              {/*products.map(item => (
               <a href={`/create/${item.id}`} className="hover:underline hover:text-blue-500">
