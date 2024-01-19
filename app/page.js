@@ -185,7 +185,7 @@ export default async function Landing() {
           <li className="my-5">
             <p className="text-xl font-bold">
               <b className="text-blue-500 text-2xl">1</b>. What type of product
-              can I sell
+              can you sell
             </p>
             <p className="text-sm py-5">
               All types of products can be listed and sold here, including
@@ -194,7 +194,7 @@ export default async function Landing() {
           </li>
           <li className="my-5">
             <p className="text-xl font-bold">
-              <b className="text-blue-500 text-2xl">2</b>. Can I sell a idea?
+              <b className="text-blue-500 text-2xl">2</b>. Can you sell a idea?
             </p>
             <p className="text-sm py-5">
               Please note that only products that have been launched can be
