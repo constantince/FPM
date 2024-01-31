@@ -12,7 +12,7 @@ export default async function RootLayout({ children }) {
     <div className="flex items-center justify-center bg-[#fbfbfb] pb-5">
       <div className="">
         <p className="mt-4 flex items-center text-xs text-gray-500 hover:text-gray-700 mb-10">
-          Pleas note: Your product must be launded at once to sell.
+          请注意：目前单次限制生成2000个字符，或者1000个汉字，您可以分次生成。
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -28,7 +28,7 @@ export default async function RootLayout({ children }) {
             />
           </svg>
         </p>
-        <form method="post" action="/api/createunproduct">
+        <form method="post" action="/api/createrequest">
           {children}
           <Link
             href="/profile"

@@ -11,8 +11,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Failed Products Matter",
-  description: "Sell or List your failed products then see what will happend",
+  title: "声音克隆",
+  description: "克隆您的声音",
 };
 
 export default async function RootLayout({ children, modal }) {

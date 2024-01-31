@@ -6,7 +6,7 @@ const env = process.env;
 const db = admin.firestore();
 // console.log(firebase.db);
 // const { doc, setDoc, collection } = firebase.db;
-const col = db.collection("data");
+const col = db.collection("examples");
 // console.log(dataRef);;
 async function upload(request, response) {
   if (request.method === "POST") {
@@ -24,39 +24,18 @@ async function upload(request, response) {
       });
     }
     const { downloadUrl, name } = request.body;
-    // invoke function start to transcripte.
-    const {
-      data: { process_id },
-      status,
-    } = await monster
-      .transcription(
-        downloadUrl,
-        "transcriptionHook",
-        env.LOCAL_URL_DOMAIN + "/api/get_result",
-      )
-      .catch((ex) => {
-        response.status(500).json({
-          code: 1,
-          message: ex,
-        });
-      });
     // console.log("result:", result);
     // create document with donwloadUlrl and pid;
-    await col.doc(process_id).set(
-      {
-        downloadUrl,
-        process_id,
-        uid: user.uid,
-        name,
-        status: "IN_PROCESS",
-      },
-      { merge: true },
-    );
+    await col.add({
+      downloadUrl,
+      uid: user.uid,
+      name,
+    });
 
     response.status(200).json({
       code: 0,
       obj: null,
-      message: "file upload success, waitting for hook action.",
+      message: "file upload success",
       pid: process_id,
       status,
     });

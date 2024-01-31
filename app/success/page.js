@@ -3,7 +3,7 @@ const Success = () => {
     <div className="flex min-h-screen items-center flex-col justify-center bg-gray-100">
       <a
         className="text-black rounded-l-md my-10 py-2 hover:text-blue px-3"
-        href="/"
+        href="/profile"
       >
         <div className="flex flex-row align-middle">
           <svg
@@ -18,7 +18,7 @@ const Success = () => {
               clipRule="evenodd"
             />
           </svg>
-          <p className="ml-2">Back Home</p>
+          <p className="ml-2">前往个人中心</p>
         </div>
       </a>
       <div className="rounded-lg bg-gray-50 px-16 py-14">
@@ -43,9 +43,9 @@ const Success = () => {
           </div>
         </div>
         <h3 className="my-4 text-center text-3xl font-semibold text-gray-700">
-          Congratuation!
+          文件上传成功!
         </h3>
-        <p>Process has been done. </p>
+        <p>程序正在处理，请耐心等待一段时间。 </p>
       </div>
     </div>
   );
