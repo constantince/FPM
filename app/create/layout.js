@@ -28,7 +28,7 @@ export default async function RootLayout({ children }) {
             />
           </svg>
         </p>
-        <form method="post" action="/api/createrequest">
+        <form method="post" action="/api/create_request">
           {children}
           <Link
             href="/profile"

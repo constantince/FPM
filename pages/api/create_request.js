@@ -8,9 +8,9 @@ export default async function SessionLogin(req, res) {
     res.status(401).send("UNAUTHORIZED REQUEST!");
     return;
   }
-
-  const unproductCol = db.collection("voices");
-  await unproductCol.add({
+  console.log("post body...", req.body);
+  const voicesCol = db.collection("voices");
+  await voicesCol.add({
     ...req.body,
     status: "pending",
     createTime: FieldValue.serverTimestamp(),

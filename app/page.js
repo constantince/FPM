@@ -175,7 +175,7 @@ export default function Home() {
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col">
           <p className="my-10">
-            请确保您的声音样本清晰，并且长度在5~200秒内，最佳时间为60秒。少于5s无法正常生成语音
+            请确保您的声音样本清晰，并且长度在5~200秒内，最佳时间为60秒。少于5s无法正常生成语音。（需要魔法上传）
           </p>
           <form
             onSubmit={onSubmit}
@@ -185,7 +185,7 @@ export default function Home() {
               {name ? (
                 <div className="flex justify-center flex-col items-center">
                   <h1 className="pt-2 sm:pt-5 text-blue">
-                    {name} uploaded:
+                    {name} 正在上载:
                     <span className=" text-xs text-yellow-400">
                       {progress}%
                     </span>
@@ -194,7 +194,7 @@ export default function Home() {
                     <div className=" w-full h-full bg-gray-200 absolute " />
                     <div
                       className=" h-full bg-yellow-400 sm:bg-green-500 absolute"
-                      style={{ width: 进度 + "%" }}
+                      style={{ width: progress + "%" }}
                     />
                   </div>
                 </div>
@@ -243,7 +243,7 @@ export default function Home() {
               type="submit"
               className="block ml-auto mr-auto my-20 text-gray-900 bg-[#F7BE38] hover:bg-[#F7BE38]/90 focus:ring-4 focus:outline-none focus:ring-[#F7BE38]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center items-center dark:focus:ring-[#F7BE38]/50 me-2 mb-2"
             >
-              Submit
+              开始
             </button>
           </form>
         </div>

@@ -4,6 +4,12 @@ import admin from "/firebase/admin";
 const db = admin.firestore();
 export default async function Index({ params }) {
   const user = await getUserAuth();
+  let examples = [];
+  const col = db.collection("examples");
+  const exampleSnapShot = await col.where("uid", "==", user.id).get();
+  if (!exampleSnapShot.empty) {
+    examples = exampleSnapShot.docs;
+  }
   const { id } = user || {};
   return (
     <>
@@ -43,9 +49,9 @@ export default async function Index({ params }) {
           name="source"
           className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
         >
-          <option value="1">{"测试.mp3"}</option>
-          <option value="1">{"测试1.mp3"}</option>
-          <option value="1">{"测试2.mp3"}</option>
+          {examples.map((example) => (
+            <option value={example.id}>{example.data().name}</option>
+          ))}
         </select>
       </div>
 

@@ -43,7 +43,7 @@ const Success = () => {
           </div>
         </div>
         <h3 className="my-4 text-center text-3xl font-semibold text-gray-700">
-          文件上传成功!
+          操作成功!
         </h3>
         <p>程序正在处理，请耐心等待一段时间。 </p>
       </div>
