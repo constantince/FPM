@@ -1,21 +1,5 @@
-"use client";
-import { useState, useEffect, useContext } from "react";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
-import firebase from "../firebase/index.js";
-import Link from "next/link";
-import Warning from "../comps/warning";
-// import Nav from "../comps/nav";
-import { getAuth, onAuthStateChanged, UserInfo } from "firebase/auth";
-import { useRouter } from "next/navigation";
-import { UserContext } from "../utils/user-provider";
-import Modal from "../comps/modal";
-
-const storage = getStorage();
+import getUserAuth from '../utils/server_user_auth'
+// const storage = getStorage()
 // const storageRef = ref(storage, "audios/first_voice.mp3");
 // console.log(storageRef);
 // getDownloadURL(storageRef).then((downloadURL) => {
@@ -23,239 +7,153 @@ const storage = getStorage();
 // });
 
 // console.log("app/page.js line 26:", decodedToken);
-export default function Home() {
-  const userInfo = useContext(UserContext);
-  console.log(userInfo);
-  const [file, setFile] = useState(null);
-  const [user, setUser] = useState(userInfo);
-  const [warn, setWarn] = useState(null);
-  const [name, setName] = useState(null);
-  const [progress, setProgress] = useState(0);
-  const router = useRouter();
-  function onChange(e) {
-    e.preventDefault();
-    const file = e.target.files[0];
-    // console.log(file);
-    if (file && /^audio\/(mp3|wav|mpeg)$/g.test(file.type)) {
-      // test the file type
-      if (file.size <= 8 * 1024 * 1024) {
-        // test the file size
-        setFile(file);
-        setName(file.name);
-      } else {
-        setWarn("文件过大，请减少文件体积");
-      }
-    } else {
-      setWarn("仅支持后缀名为.mp3 .wav的音频文件");
-    }
-  }
+export default async function Home() {
+    const user = await getUserAuth()
+    const { id } = user
+    // console.log(userInfo)
+    // const [file, setFile] = useState(null)
+    // const [user, setUser] = useState(userInfo)
+    // const [warn, setWarn] = useState(null)
+    // const [name, setName] = useState(null)
+    // const [progress, setProgress] = useState(0)
+    // const router = useRouter()
 
-  // onAuthStateChanged(getAuth(), async (user) => {
-  //   if (user) {
-  //     await user.getIdToken(true);
-  //     user.getIdTokenResult().then((res) => {
-  //       alert(JSON.stringify(res.claims));
-  //     });
-  //   }
-  // });
+    // onAuthStateChanged(getAuth(), async (user) => {
+    //   if (user) {
+    //     await user.getIdToken(true);
+    //     user.getIdTokenResult().then((res) => {
+    //       alert(JSON.stringify(res.claims));
+    //     });
+    //   }
+    // });
 
-  function onSubmit(e) {
-    e.preventDefault();
-    if (!user || !user.uid) {
-      window.location.href = "/signin";
-      return;
-    }
+    // return (
+    //   <>
+    //     <Link href={{ pathname: "/transcription/1" }}>must login firt</Link>
+    //     <a href="/transcription/">without auth</a>
+    //   </>
+    // );
+    // console.log("what is going on preview...");
 
-    if (!file) return setWarn("请先上传音频");
+    return (
+        <>
+            <header className="flex justify-end p-5">
+                <a
+                    href="/signin"
+                    className="middle none center mr-4 rounded-lg bg-blue-500 py-2 px-6 font-sans text-xs font-bold text-white shadow-md shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                >
+                    Login
+                </a>
+            </header>
+            <main className="flex min-h-screen flex-col items-center justify-between p-24 py-5">
+                <div className="flex items-center min-h-screen bg-gray-50 dark:bg-gray-900">
+                    <div className="container mx-auto">
+                        <div className="max-w-md mx-auto my-10 bg-white dark:bg-gray-800 p-5 rounded-md shadow-sm">
+                            <div className="text-center">
+                                <h1 className="my-3 text-3xl font-semibold text-gray-700 dark:text-gray-200">
+                                    Create Your Custom Voice From Youtube
+                                </h1>
+                            </div>
+                            <div className="m-7">
+                                <form
+                                    action="/api/create_project"
+                                    method="POST"
+                                    id="clone-form"
+                                >
+                                    <input
+                                        type="text"
+                                        value={id}
+                                        name="uid"
+                                        className="hidden"
+                                        readOnly={true}
+                                    />
 
-    // const { role } = user;
-
-    // if (role !== "premium")
-    //   return alert("You are not a memeber, please subscribed first.");
-
-    // return alert("congraguation!!");
-
-    const storageRef = ref(storage, "audios/" + file.name);
-    const uploadTask = uploadBytesResumable(storageRef, file, {
-      contentType: file.type,
-    });
-
-    // Listen for state changes, errors, and completion of the upload.
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(p);
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
-        }
-      },
-      (error) => {
-        // A full list of error codes is available at
-        // https://firebase.google.com/docs/storage/web/handle-errors
-        switch (error.code) {
-          case "storage/unauthorized":
-            // User doesn't have permission to access the object
-            break;
-          case "storage/canceled":
-            // User canceled the upload
-            break;
-
-          // ...
-
-          case "storage/unknown":
-            // Unknown error occurred, inspect error.serverResponse
-            break;
-        }
-      },
-      () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
-          // call monster api with downloadURL paramters;
-          console.log("File available at", downloadUrl);
-          // front-end process done
-          // fetch("/api/uploadaudios", { auth, downloadURL }).then((res) => {
-          //   console.log("res:", res);
-          //   // if (res.status === 200) {
-          //   //   window.location.href = "/transcription/" + res.pid;
-          //   // }
-          // });
-
-          const postData = {
-            uid: user.uid,
-            downloadUrl,
-            name: file.name,
-          };
-
-          // Configuring the fetch request
-          const fetchOptions = {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json", // Assuming JSON data in the request body
-              // Add any other headers as needed
-            },
-            body: JSON.stringify(postData), // Convert JavaScript object to JSON string
-          };
-
-          // Making the fetch request
-          fetch("/api/uploadaudios", fetchOptions)
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error("Network response was not ok");
-              }
-              return response.json(); // Assuming the response is in JSON format
-            })
-            .then((data) => {
-              router.push("/success");
-            })
-            .catch((error) => {
-              console.error("Error during fetch:", error);
-            });
-        });
-      },
-    );
-  }
-
-  // return (
-  //   <>
-  //     <Link href={{ pathname: "/transcription/1" }}>must login firt</Link>
-  //     <a href="/transcription/">without auth</a>
-  //   </>
-  // );
-  // console.log("what is going on preview...");
-
-  return (
-    <>
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col">
-          <p className="my-10">
-            请确保您的声音样本清晰，并且长度在5~200秒内，最佳时间为60秒。少于5s无法正常生成语音。（需要魔法上传）
-          </p>
-          <form
-            onSubmit={onSubmit}
-            className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex flex-col"
-          >
-            <div className="flex items-center justify-center w-full">
-              {name ? (
-                <div className="flex justify-center flex-col items-center">
-                  <h1 className="pt-2 sm:pt-5 text-blue">
-                    {name} 正在上载:
-                    <span className=" text-xs text-yellow-400">
-                      {progress}%
-                    </span>
-                  </h1>
-                  <div className="mt-2 h-4 relative w-60 rounded-full overflow-hidden">
-                    <div className=" w-full h-full bg-gray-200 absolute " />
-                    <div
-                      className=" h-full bg-yellow-400 sm:bg-green-500 absolute"
-                      style={{ width: progress + "%" }}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <label
-                    htmlFor="dropzone-file"
-                    className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                  >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg
-                        className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 20 16"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                        />
-                      </svg>
-                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="font-semibold">点击此处</span> 或者拖拽
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        支持音频格式：WAV, MP3 (最大. 8M)
-                      </p>
+                                    <div className="mb-6">
+                                        <label
+                                            htmlFor="voice"
+                                            className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
+                                        >
+                                            Name of the Example Voice:
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="voice"
+                                            id="voice"
+                                            placeholder="Example"
+                                            required
+                                            className="w-full px-3 py-2 placeholder-gray-300 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-gray-900 dark:focus:border-gray-500"
+                                        />
+                                    </div>
+                                    <div className="mb-6">
+                                        <label
+                                            htmlFor="link"
+                                            className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
+                                        >
+                                            Example Youtube Link
+                                        </label>
+                                        <input
+                                            type="link"
+                                            name="link"
+                                            id="link"
+                                            pattern="^https?:\/\/(www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})$"
+                                            placeholder="https://youtube.com?watch=xxxxxxx"
+                                            required
+                                            className="w-full px-3 py-2 placeholder-gray-300 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-gray-900 dark:focus:border-gray-500"
+                                        />
+                                    </div>
+                                    <div className="mb-6">
+                                        <label
+                                            htmlFor="name"
+                                            className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
+                                        >
+                                            Name of the New Voice:
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            id="name"
+                                            placeholder="Example one."
+                                            required
+                                            className="w-full px-3 py-2 placeholder-gray-300 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-gray-900 dark:focus:border-gray-500"
+                                        />
+                                    </div>
+                                    <div className="mb-6">
+                                        <label
+                                            htmlFor="message"
+                                            className="block mb-2 text-sm text-gray-600 dark:text-gray-400"
+                                        >
+                                            New Voice Content
+                                        </label>
+                                        <textarea
+                                            rows={5}
+                                            name="message"
+                                            id="message"
+                                            placeholder="Your Words"
+                                            className="w-full px-3 py-2 placeholder-gray-300 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500 dark:border-gray-600 dark:focus:ring-gray-900 dark:focus:border-gray-500"
+                                            required
+                                            defaultValue={''}
+                                        />
+                                    </div>
+                                    <div className="mb-6">
+                                        <button
+                                            type="submit"
+                                            className="w-full px-3 py-4 text-white bg-indigo-500 rounded-md focus:bg-indigo-600 focus:outline-none"
+                                        >
+                                            Create Voice
+                                        </button>
+                                    </div>
+                                    <p
+                                        className="text-base text-center text-gray-400"
+                                        id="result"
+                                    ></p>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <input
-                      onChange={onChange}
-                      id="dropzone-file"
-                      type="file"
-                      name="target-audio"
-                      className="hidden"
-                    />
-                  </label>
-                </>
-              )}
-            </div>
+                </div>
 
-            <button
-              type="submit"
-              className="block ml-auto mr-auto my-20 text-gray-900 bg-[#F7BE38] hover:bg-[#F7BE38]/90 focus:ring-4 focus:outline-none focus:ring-[#F7BE38]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center items-center dark:focus:ring-[#F7BE38]/50 me-2 mb-2"
-            >
-              开始
-            </button>
-          </form>
-        </div>
-
-        <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]"></div>
-      </main>
-      <Modal
-        context={warn}
-        show={!!warn}
-        title="opps~~"
-        ok={() => setWarn(null)}
-      />
-    </>
-  );
+                <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]"></div>
+            </main>
+        </>
+    )
 }
