@@ -27,6 +27,7 @@ export default async function SessionLogin(req, res) {
         example: example.id,
         status: 'pending',
         createTime: FieldValue.serverTimestamp(),
+        downloadUrl: null,
     })
 
     //   const doc = await feedInfo.get();

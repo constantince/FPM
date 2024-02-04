@@ -1,8 +1,10 @@
-import Nav from "../../comps/nav";
+import Nav from '../../comps/nav'
 
 export default async function Layout({ children }) {
-    return <div className="pt-20">
-    <Nav />
-    {children}
-    </div>
+    return (
+        <div className="h-full">
+            <Nav />
+            {children}
+        </div>
+    )
 }

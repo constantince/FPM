@@ -16,8 +16,8 @@ const db = admin.firestore()
 const Profile = async ({}) => {
     const user = await getUserAuth()
 
-    // console.log("user session verify...", user);
-    if (!user) {
+    console.log('user session verify...', user)
+    if (!user.id) {
         redirect('/expired')
     }
     const { displayName, email, photoURL, role, stripeId, id, order } = user
@@ -29,14 +29,17 @@ const Profile = async ({}) => {
         examples = exampleSnapShot.docs
     }
     let voices = []
-    const scriptVoicesSnapShot = await voiceCol.where('uid', '==', id).get()
+    const scriptVoicesSnapShot = await voiceCol
+        .where('uid', '==', id)
+        .orderBy('createTime', 'desc')
+        .get()
     if (!scriptVoicesSnapShot.empty) {
         voices = scriptVoicesSnapShot.docs
     }
 
     return (
         <>
-            <div className="container h-4/5 w-4/5 overflow-hidden overflow-y-scroll py-5 mx-auto">
+            <div className="container h-4/6 w-full max-w-md overflow-hidden overflow-y-scroll py-5 px-5 mx-auto font-medium">
                 {voices.length === 0 ? (
                     <p className="mt-4 flex items-center text-base text-gray-500 hover:text-gray-700 mb-10">
                         您暂时还未生成任何音频
@@ -77,16 +80,18 @@ const Profile = async ({}) => {
 
                                         {voice.data().name}
                                     </span>
-                                    {voice.data().status !== 'done' ? (
+                                    {voice.data().status !== 'done' ||
+                                    !voice.data().downloadUrl ? (
                                         <p className="ml-5 text-xs ">
-                                            请等待处理
+                                            Waitting...
                                         </p>
                                     ) : (
                                         <a
+                                            download
                                             href={voice.data().downloadUrl}
-                                            className="mx-auto ml-5 rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                                            className="ml-5 rounded-sm middle px-3 py-1 none bg-blue-500 font-sans text-xs font-bold text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                                         >
-                                            下载
+                                            Dwonload
                                         </a>
                                     )}
                                 </li>
@@ -98,7 +103,7 @@ const Profile = async ({}) => {
             <div className="my-10 self-center align-center flex">
                 <a
                     href="/create"
-                    className="mx-auto rounded-3xl middle px-3 py-2 none bg-blue-500 font-sans text-base font-bold text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                    className="mx-auto rounded-sm middle px-4 py-1 none bg-blue-500 font-sans text-sm font-bold text-white shadow-md hover:cursor-pointer shadow-blue-500/20 transition-all hover:shadow-lg hover:shadow-blue-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                 >
                     {decodeURIComponent('%2B')} 创建音频
                 </a>
